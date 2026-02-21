@@ -5,4 +5,8 @@
 //  Created by Игнат Рогачевич on 21.02.26.
 //
 
-import Foundation
+import UIKit
+
+final class MainScreen: UIViewController {
+    private let collection = FeedCollection()
+}
