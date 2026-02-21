@@ -18,7 +18,7 @@ final class TabBarController: UITabBarController {
             image: UIImage(systemName: "home"),
             selectedImage: UIImage(systemName: "chevron.left")
         )
-        
+        viewControllers = [mainScreenController]
         tabBar.tintColor = .white
         tabBar.backgroundColor = .red //for test
         tabBar.tintColor = .green //also test
