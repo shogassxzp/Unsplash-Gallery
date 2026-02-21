@@ -22,6 +22,7 @@ final class FeedCollection: UICollectionView {
     }
 
     private func setupCollection() {
+        backgroundColor = .lightGreyAdaptive
         delegate = self
         dataSource = self
         register(FeedCell.self, forCellWithReuseIdentifier: FeedCell.reuseIdentifier)

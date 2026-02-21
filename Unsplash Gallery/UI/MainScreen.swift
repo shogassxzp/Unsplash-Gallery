@@ -14,7 +14,7 @@ final class MainScreen: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(collection)
-        view.backgroundColor = .whiteAdaptive
+        view.backgroundColor = .lightGreyAdaptive
         collection.translatesAutoresizingMaskIntoConstraints = false
        
         NSLayoutConstraint.activate([
