@@ -8,6 +8,9 @@
 import UIKit
 
 final class DetailsScreenViewController: UIViewController {
+    private var currentIndex: Int = 0
+    private var photos: [UIImage] = [.mock, .mock1, .mock2]
+
     private lazy var detailsImageView: UIImageView = {
         let details = UIImageView()
         details.contentMode = .scaleAspectFill
@@ -58,11 +61,15 @@ final class DetailsScreenViewController: UIViewController {
         return button
     }()
 
+    // MARK: - View Did Load
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .backgroundAdaptive
         addSubviews()
         setupLayout()
+        setupGesture()
+        updateUI()
     }
 
     private func addSubviews() {
@@ -97,6 +104,66 @@ final class DetailsScreenViewController: UIViewController {
             shootedOnLabel.topAnchor.constraint(equalTo: publishedLabel.bottomAnchor, constant: 16),
             shootedOnLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])
+    }
+
+    private func setupGesture() {
+        let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+        swipeLeft.direction = .left
+        view.addGestureRecognizer(swipeLeft)
+
+        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+        swipeRight.direction = .right
+        view.addGestureRecognizer(swipeRight)
+    }
+
+    @objc private func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
+        if gesture.direction == .left {
+            if currentIndex < photos.count - 1 {
+                currentIndex += 1
+                animateTransition(isNext: true)
+            }
+        } else if gesture.direction == .right {
+            if currentIndex > 0 {
+                currentIndex -= 1
+                animateTransition(isNext: false)
+            }
+        }
+    }
+
+    private func animateTransition(isNext: Bool) {
+        let transition = CATransition()
+        transition.duration = 0.3
+        transition.type = .push
+        transition.subtype = isNext ? .fromRight : .fromLeft
+        transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+
+        detailsImageView.layer.add(transition, forKey: kCATransition)
+        
+        UIView.transition(
+            with: descriptionLabel,
+            duration: 0.3,
+            options: .transitionCrossDissolve,
+            animations: { self.updateUI() },
+            completion: nil
+        )
+        
+        UIView.transition(
+            with: publishedLabel,
+            duration: 0.3,
+            options: .transitionCrossDissolve,
+            animations: nil
+        )
+        UIView.transition(
+            with: shootedOnLabel,
+            duration: 0.3,
+            options: .transitionCrossDissolve,
+            animations: nil
+        )
+    }
+
+    private func updateUI() {
+        detailsImageView.image = photos[currentIndex]
+        descriptionLabel.text = "That photo number \(currentIndex). Take description from API"
     }
 
     @objc private func heartTapped() {
