@@ -5,4 +5,22 @@
 //  Created by Игнат Рогачевич on 21.02.26.
 //
 
-import Foundation
+import UIKit
+
+final class MainScreen: UIViewController {
+    private let collection = FeedCollection()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.addSubview(collection)
+        view.backgroundColor = .backgroundAdaptive
+        collection.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            collection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collection.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collection.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+    }
+}
