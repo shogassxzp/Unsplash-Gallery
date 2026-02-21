@@ -8,8 +8,9 @@
 import UIKit
 
 final class TabBarController: UITabBarController {
-    private let mainScreenController = MainScreen()
+    private let mainScreenController = MainScreen(photos: [.mock,.mock1,.mock2])
     private let detailsScreenController = DetailsScreenViewController()
+    private let favouriteScreenController = FavouriteViewController(favouritePhotos: [.mock,.mock1,.mock2])
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,9 +25,14 @@ final class TabBarController: UITabBarController {
             image: UIImage(systemName: "house"),
             selectedImage: UIImage(systemName: "house")
         )
-        viewControllers = [mainScreenController, detailsScreenController]
+        favouriteScreenController.tabBarItem = UITabBarItem(
+            title: "fav",
+            image: UIImage(systemName: "heart"),
+            selectedImage: UIImage(systemName: "heart")
+        )
+        viewControllers = [mainScreenController, detailsScreenController,favouriteScreenController]
         tabBar.tintColor = .white
-        tabBar.backgroundColor = .clear // for test
+        tabBar.backgroundColor = .clear 
         tabBar.tintColor = .green // also test
         tabBar.isTranslucent = true
     }
