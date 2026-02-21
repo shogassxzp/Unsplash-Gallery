@@ -12,7 +12,7 @@ final class FavouriteViewController: UIViewController {
     private var collection = FeedCollection()
     
     init(favouritePhotos: [UIImage]) {
-        self.favouritePhotos = [.mock,.mock1,.mock2]
+        self.favouritePhotos = favouritePhotos
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -29,10 +29,11 @@ final class FavouriteViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .backgroundAdaptive
         title = "Favourite"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
 
         collection.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collection)
-        view.addSubview(titleLabel)
 
         NSLayoutConstraint.activate([
            

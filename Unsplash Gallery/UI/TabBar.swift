@@ -4,13 +4,13 @@
 //
 //  Created by Игнат Рогачевич on 21.02.26.
 //
-
+//
 import UIKit
 
 final class TabBarController: UITabBarController {
-    private let mainScreenController = MainScreen(photos: [.mock,.mock1,.mock2])
+    private let mainScreenController = UINavigationController(rootViewController: MainScreen(photos: [.mock, .mock1, .mock2,.mock3,.mock4]))
     private let detailsScreenController = DetailsScreenViewController()
-    private let favouriteScreenController = FavouriteViewController(favouritePhotos: [.mock,.mock1,.mock2])
+    private let favouriteScreenController = UINavigationController(rootViewController: FavouriteViewController(favouritePhotos: [.mock, .mock1, .mock2,.mock3,.mock4]))
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,9 +30,9 @@ final class TabBarController: UITabBarController {
             image: UIImage(systemName: "heart"),
             selectedImage: UIImage(systemName: "heart")
         )
-        viewControllers = [mainScreenController, detailsScreenController,favouriteScreenController]
+        viewControllers = [mainScreenController, detailsScreenController, favouriteScreenController]
         tabBar.tintColor = .white
-        tabBar.backgroundColor = .clear 
+        tabBar.backgroundColor = .clear
         tabBar.tintColor = .green // also test
         tabBar.isTranslucent = true
     }

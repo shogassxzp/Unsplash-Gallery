@@ -10,9 +10,9 @@ import UIKit
 final class MainScreen: UIViewController {
     private let collection = FeedCollection()
     private var photos: [UIImage]
-    
+
     init(photos: [UIImage]) {
-        self.photos = [.mock, .mock1, .mock2]
+        self.photos = photos
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -22,15 +22,23 @@ final class MainScreen: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupUI()
+        collection.configure(with: photos)
+    }
+
+    private func setupUI() {
+        title = "Feed"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
         view.addSubview(collection)
         view.backgroundColor = .backgroundAdaptive
         collection.translatesAutoresizingMaskIntoConstraints = false
-        collection.configure(with: self.photos)
+        
 
         NSLayoutConstraint.activate([
             collection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collection.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collection.topAnchor.constraint(equalTo: view.topAnchor),
             collection.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
