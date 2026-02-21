@@ -8,7 +8,6 @@
 import UIKit
 
 final class DetailsScreenViewController: UIViewController {
-   
     private lazy var detailsImageView: UIImageView = {
         let details = UIImageView()
         details.contentMode = .scaleAspectFill
@@ -45,13 +44,17 @@ final class DetailsScreenViewController: UIViewController {
     }()
 
     private lazy var likeButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Сохранить", for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
-        button.backgroundColor = .redUniversal
-        button.tintColor = .whiteUniversal
-        button.clipsToBounds = true
-        button.layer.cornerRadius = 16
+        let button = UIButton(type: .system)
+        var config = UIButton.Configuration.plain()
+        
+        config.image = UIImage(systemName: "heart")
+        config.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 24, weight: .semibold)
+        config.baseBackgroundColor = .clear
+        config.background.backgroundColor = .clear
+
+        button.configuration = config
+        button.tintColor = .redUniversal
+        button.addTarget(self, action: #selector(heartTapped), for: .touchUpInside)
         return button
     }()
 
@@ -82,8 +85,8 @@ final class DetailsScreenViewController: UIViewController {
             descriptionLabel.bottomAnchor.constraint(equalTo: publishedLabel.topAnchor, constant: -12),
 
             likeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            likeButton.topAnchor.constraint(equalTo: detailsImageView.bottomAnchor, constant: 20),
-            likeButton.widthAnchor.constraint(equalToConstant: 100),
+            likeButton.topAnchor.constraint(equalTo: detailsImageView.bottomAnchor, constant: 16),
+            likeButton.widthAnchor.constraint(equalToConstant: 44),
             likeButton.heightAnchor.constraint(equalToConstant: 44),
 
             descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -100,5 +103,19 @@ final class DetailsScreenViewController: UIViewController {
             shootedOnLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])
     }
-}
 
+    @objc private func heartTapped() {
+        likeButton.isSelected.toggle()
+
+        let imageName = likeButton.isSelected ? "heart.fill" : "heart"
+        likeButton.configuration?.image = UIImage(systemName: imageName)
+
+        UIView.animate(withDuration: 0.1, animations: {
+            self.likeButton.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+        }) { _ in
+            UIView.animate(withDuration: 0.1) {
+                self.likeButton.transform = .identity
+            }
+        }
+    }
+}
