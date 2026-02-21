@@ -8,11 +8,11 @@
 import UIKit
 
 final class FeedCollection: UICollectionView {
-    private let photos: [String] = []
+    private var photos: [UIImage] = []
     private var selectedIndexPath: IndexPath?
 
     init() {
-        let layout = FeedCollection.createLayout()
+        let layout = UICollectionViewLayout.createLayout()
         super.init(frame: .zero, collectionViewLayout: layout)
         setupCollection()
     }
@@ -30,24 +30,24 @@ final class FeedCollection: UICollectionView {
         translatesAutoresizingMaskIntoConstraints = false
         showsVerticalScrollIndicator = false
     }
+    
+    func configure(with photos: [UIImage]) {
+        self.photos = photos
+        self.reloadData()
+    }
+}
 
-    // MARK: - Waterfall Layout
 
-    private static func createLayout() -> UICollectionViewCompositionalLayout {
-        let itemSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(0.5),
-            heightDimension: .fractionalHeight(1.0)
-        )
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        item.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
-        let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0),
-            heightDimension: .absolute(300)
-        )
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item, item])
-        let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 8, bottom: 10, trailing: 8)
+extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        photos.count
+    }
 
-        return UICollectionViewCompositionalLayout(section: section)
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FeedCell.reuseIdentifier, for: indexPath) as? FeedCell else {
+            return UICollectionViewCell()
+        }
+        cell.collectionImageView.image = photos[indexPath.item]
+        return cell
     }
 }
