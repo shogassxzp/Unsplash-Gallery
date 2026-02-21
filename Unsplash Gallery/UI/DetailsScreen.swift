@@ -23,7 +23,6 @@ final class DetailsScreenViewController: UIViewController {
 
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
-        label.text = "A vibrant top-down view of a variety of blooming Primroses (Primula). The deep green, textured foliage creates a stunning natural contrast against the multicolored petals in shade"
         label.font = .systemFont(ofSize: 13, weight: .regular)
         label.textColor = .blackAdaptive
         label.numberOfLines = 3
@@ -32,17 +31,15 @@ final class DetailsScreenViewController: UIViewController {
 
     private lazy var publishedLabel: UILabel = {
         let label = UILabel()
-        label.text = "Published on February 18, 2026 (UTC)"
         label.font = .systemFont(ofSize: 13, weight: .semibold)
-        label.textColor = .black
+        label.textColor = .blackAdaptive
         return label
     }()
 
     private lazy var shootedOnLabel: UILabel = {
         let label = UILabel()
-        label.text = "FUJIFILM, X100VI"
         label.font = .systemFont(ofSize: 13, weight: .semibold)
-        label.textColor = .black
+        label.textColor = .blackAdaptive
         return label
     }()
 
@@ -131,39 +128,42 @@ final class DetailsScreenViewController: UIViewController {
     }
 
     private func animateTransition(isNext: Bool) {
-        let transition = CATransition()
-        transition.duration = 0.3
-        transition.type = .push
-        transition.subtype = isNext ? .fromRight : .fromLeft
-        transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        let tempImageView = UIImageView(frame: detailsImageView.frame)
+        tempImageView.contentMode = detailsImageView.contentMode
+        tempImageView.image = detailsImageView.image
+        tempImageView.clipsToBounds = detailsImageView.clipsToBounds
+        tempImageView.layer.cornerRadius = detailsImageView.layer.cornerRadius
+        tempImageView.layer.maskedCorners = detailsImageView.layer.maskedCorners
+        view.addSubview(tempImageView)
 
-        detailsImageView.layer.add(transition, forKey: kCATransition)
-        
-        UIView.transition(
-            with: descriptionLabel,
-            duration: 0.3,
-            options: .transitionCrossDissolve,
-            animations: { self.updateUI() },
-            completion: nil
-        )
-        
-        UIView.transition(
-            with: publishedLabel,
-            duration: 0.3,
-            options: .transitionCrossDissolve,
-            animations: nil
-        )
-        UIView.transition(
-            with: shootedOnLabel,
-            duration: 0.3,
-            options: .transitionCrossDissolve,
-            animations: nil
-        )
+        updateUI()
+
+        let translationX = isNext ? view.bounds.width : -view.bounds.width
+
+        detailsImageView.transform = CGAffineTransform(translationX: translationX, y: 0)
+
+        UIView.animate(withDuration: 0.4, delay: .zero, options: .curveEaseInOut, animations: {
+            tempImageView.transform = CGAffineTransform(translationX: -translationX, y: 0)
+            tempImageView.alpha = 0
+
+            self.detailsImageView.transform = .identity
+            self.descriptionLabel.alpha = 0.5
+            self.publishedLabel.alpha = 0.5
+            self.shootedOnLabel.alpha = 0.5
+            
+            self.descriptionLabel.alpha = 1.0
+            self.publishedLabel.alpha = 1.0
+            self.shootedOnLabel.alpha = 1.0
+        }) { _ in
+            tempImageView.removeFromSuperview()
+        }
     }
 
     private func updateUI() {
         detailsImageView.image = photos[currentIndex]
         descriptionLabel.text = "That photo number \(currentIndex). Take description from API"
+        publishedLabel.text = "Take date from API"
+        shootedOnLabel.text = "Take camera name from API"
     }
 
     @objc private func heartTapped() {
