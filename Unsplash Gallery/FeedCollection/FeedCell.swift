@@ -28,7 +28,8 @@ final class FeedCell: UICollectionViewCell {
         backgroundColor = .clear
         contentView.backgroundColor = .whiteAdaptive
         collectionImageView.image = UIImage(resource: .mock)
-        collectionImageView.contentMode = .center
+        collectionImageView.contentMode = .scaleAspectFill
+        collectionImageView.clipsToBounds = true
         collectionImageView.layer.masksToBounds = true
         collectionImageView.layer.cornerRadius = 16
         collectionImageView.backgroundColor = .blackUniversal.withAlphaComponent(0.3)
