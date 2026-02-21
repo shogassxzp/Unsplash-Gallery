@@ -28,16 +28,15 @@ final class FeedCell: UICollectionViewCell {
             $0.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview($0)
         }
-        contentView.backgroundColor = .lightGreyAdaptive
-        
-        shadowView.backgroundColor = .lightGreyAdaptive
+        contentView.backgroundColor = .backgroundAdaptive
+
+        shadowView.backgroundColor = .backgroundAdaptive
         shadowView.layer.shadowColor = UIColor.blackAdaptive.cgColor
-        shadowView.layer.shadowOpacity = 0.5
+        shadowView.layer.shadowOpacity = 0.4
         shadowView.layer.shadowOffset = CGSize(width: 0, height: 4)
-        shadowView.layer.shadowRadius = 8
+        shadowView.layer.shadowRadius = 6
         shadowView.layer.cornerRadius = 16
 
-        
         collectionImageView.image = UIImage(resource: .mock)
         collectionImageView.contentMode = .scaleAspectFill
         collectionImageView.clipsToBounds = true

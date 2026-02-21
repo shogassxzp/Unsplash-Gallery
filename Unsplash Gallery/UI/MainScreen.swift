@@ -9,19 +9,18 @@ import UIKit
 
 final class MainScreen: UIViewController {
     private let collection = FeedCollection()
-    
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(collection)
-        view.backgroundColor = .lightGreyAdaptive
+        view.backgroundColor = .backgroundAdaptive
         collection.translatesAutoresizingMaskIntoConstraints = false
-       
+
         NSLayoutConstraint.activate([
             collection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collection.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collection.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            collection.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
 }
