@@ -14,7 +14,7 @@
 		1FED34B02F49A79F005062F8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FED34A92F49A79F005062F8 /* ViewController.swift */; };
 		1FED34B22F49A7AE005062F8 /* MainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FED34B12F49A7AE005062F8 /* MainScreen.swift */; };
 		1FED34B42F49A7B9005062F8 /* FavoriteScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FED34B32F49A7B9005062F8 /* FavoriteScreen.swift */; };
-		1FED34B62F49A7C6005062F8 /* FullViewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FED34B52F49A7C6005062F8 /* FullViewScreen.swift */; };
+		1FED34B62F49A7C6005062F8 /* DetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FED34B52F49A7C6005062F8 /* DetailsScreen.swift */; };
 		1FED34B82F49A7CD005062F8 /* TabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FED34B72F49A7CD005062F8 /* TabBar.swift */; };
 		1FED34BC2F49A8A0005062F8 /* FeedCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FED34BB2F49A8A0005062F8 /* FeedCollection.swift */; };
 		1FED34BE2F49A8AA005062F8 /* FeedCollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FED34BD2F49A8AA005062F8 /* FeedCollectionExtension.swift */; };
@@ -32,7 +32,7 @@
 		1FED34A92F49A79F005062F8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		1FED34B12F49A7AE005062F8 /* MainScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreen.swift; sourceTree = "<group>"; };
 		1FED34B32F49A7B9005062F8 /* FavoriteScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteScreen.swift; sourceTree = "<group>"; };
-		1FED34B52F49A7C6005062F8 /* FullViewScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullViewScreen.swift; sourceTree = "<group>"; };
+		1FED34B52F49A7C6005062F8 /* DetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsScreen.swift; sourceTree = "<group>"; };
 		1FED34B72F49A7CD005062F8 /* TabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBar.swift; sourceTree = "<group>"; };
 		1FED34BB2F49A8A0005062F8 /* FeedCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCollection.swift; sourceTree = "<group>"; };
 		1FED34BD2F49A8AA005062F8 /* FeedCollectionExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCollectionExtension.swift; sourceTree = "<group>"; };
@@ -71,7 +71,7 @@
 			isa = PBXGroup;
 			children = (
 				1FED34B12F49A7AE005062F8 /* MainScreen.swift */,
-				1FED34B52F49A7C6005062F8 /* FullViewScreen.swift */,
+				1FED34B52F49A7C6005062F8 /* DetailsScreen.swift */,
 				1FED34B32F49A7B9005062F8 /* FavoriteScreen.swift */,
 				1FED34B72F49A7CD005062F8 /* TabBar.swift */,
 			);
@@ -193,7 +193,7 @@
 				1FED34AF2F49A79F005062F8 /* SceneDelegate.swift in Sources */,
 				1FED34B02F49A79F005062F8 /* ViewController.swift in Sources */,
 				1FED34B42F49A7B9005062F8 /* FavoriteScreen.swift in Sources */,
-				1FED34B62F49A7C6005062F8 /* FullViewScreen.swift in Sources */,
+				1FED34B62F49A7C6005062F8 /* DetailsScreen.swift in Sources */,
 				1FED34B82F49A7CD005062F8 /* TabBar.swift in Sources */,
 				1FED34BC2F49A8A0005062F8 /* FeedCollection.swift in Sources */,
 			);
