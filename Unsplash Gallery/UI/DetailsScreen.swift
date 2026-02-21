@@ -46,7 +46,7 @@ final class DetailsScreenViewController: UIViewController {
     private lazy var likeButton: UIButton = {
         let button = UIButton(type: .system)
         var config = UIButton.Configuration.plain()
-        
+
         config.image = UIImage(systemName: "heart")
         config.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 24, weight: .semibold)
         config.baseBackgroundColor = .clear
@@ -78,11 +78,6 @@ final class DetailsScreenViewController: UIViewController {
             detailsImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             detailsImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             detailsImageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.75),
-
-            descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            descriptionLabel.topAnchor.constraint(equalTo: detailsImageView.bottomAnchor, constant: 24),
-            descriptionLabel.trailingAnchor.constraint(equalTo: likeButton.leadingAnchor, constant: 40),
-            descriptionLabel.bottomAnchor.constraint(equalTo: publishedLabel.topAnchor, constant: -12),
 
             likeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             likeButton.topAnchor.constraint(equalTo: detailsImageView.bottomAnchor, constant: 16),
