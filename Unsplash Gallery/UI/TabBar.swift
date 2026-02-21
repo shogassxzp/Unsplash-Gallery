@@ -15,12 +15,12 @@ final class TabBarController: UITabBarController {
         
         mainScreenController.tabBarItem = UITabBarItem(
             title: "main",
-            image: UIImage(systemName: "home"),
-            selectedImage: UIImage(systemName: "chevron.left")
+            image: UIImage(systemName: "house"),
+            selectedImage: UIImage(systemName: "house")
         )
         viewControllers = [mainScreenController]
         tabBar.tintColor = .white
-        tabBar.backgroundColor = .red //for test
+        tabBar.backgroundColor = .clear //for test
         tabBar.tintColor = .green //also test
         tabBar.isTranslucent = true
         
