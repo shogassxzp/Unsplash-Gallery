@@ -58,17 +58,24 @@ final class DetailsScreenViewController: UIViewController {
         return button
     }()
 
-    //MARK: - ViewDidAppear
+    // MARK: - ViewDidAppear
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        if #available(iOS 26.0, *) {
+            navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
+        }
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        if #available(iOS 26.0, *) {
+            navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = true
+        }
     }
-    
+
     // MARK: - ViewDidLoad
 
     override func viewDidLoad() {
@@ -117,12 +124,10 @@ final class DetailsScreenViewController: UIViewController {
     private func setupGesture() {
         let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
         swipeLeft.direction = .left
-        swipeLeft.delegate = self
         view.addGestureRecognizer(swipeLeft)
 
         let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
         swipeRight.direction = .right
-        swipeRight.delegate = self
         view.addGestureRecognizer(swipeRight)
     }
 
@@ -163,7 +168,7 @@ final class DetailsScreenViewController: UIViewController {
             self.descriptionLabel.alpha = 0
             self.publishedLabel.alpha = 0
             self.shootedOnLabel.alpha = 0
-            
+
         }) { _ in
             UIView.animate(withDuration: 0.2) {
                 self.descriptionLabel.alpha = 1.0
@@ -194,11 +199,5 @@ final class DetailsScreenViewController: UIViewController {
                 self.likeButton.transform = .identity
             }
         }
-    }
-}
-
-extension DetailsScreenViewController: UIGestureRecognizerDelegate {
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        true
     }
 }
