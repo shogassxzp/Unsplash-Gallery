@@ -58,7 +58,18 @@ final class DetailsScreenViewController: UIViewController {
         return button
     }()
 
-    // MARK: - View Did Load
+    //MARK: - ViewDidAppear
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+    }
+    
+    // MARK: - ViewDidLoad
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -106,10 +117,12 @@ final class DetailsScreenViewController: UIViewController {
     private func setupGesture() {
         let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
         swipeLeft.direction = .left
+        swipeLeft.delegate = self
         view.addGestureRecognizer(swipeLeft)
 
         let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
         swipeRight.direction = .right
+        swipeRight.delegate = self
         view.addGestureRecognizer(swipeRight)
     }
 
@@ -147,14 +160,16 @@ final class DetailsScreenViewController: UIViewController {
             tempImageView.alpha = 0
 
             self.detailsImageView.transform = .identity
-            self.descriptionLabel.alpha = 0.5
-            self.publishedLabel.alpha = 0.5
-            self.shootedOnLabel.alpha = 0.5
+            self.descriptionLabel.alpha = 0
+            self.publishedLabel.alpha = 0
+            self.shootedOnLabel.alpha = 0
             
-            self.descriptionLabel.alpha = 1.0
-            self.publishedLabel.alpha = 1.0
-            self.shootedOnLabel.alpha = 1.0
         }) { _ in
+            UIView.animate(withDuration: 0.2) {
+                self.descriptionLabel.alpha = 1.0
+                self.publishedLabel.alpha = 1.0
+                self.shootedOnLabel.alpha = 1.0
+            }
             tempImageView.removeFromSuperview()
         }
     }
@@ -179,5 +194,11 @@ final class DetailsScreenViewController: UIViewController {
                 self.likeButton.transform = .identity
             }
         }
+    }
+}
+
+extension DetailsScreenViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        true
     }
 }
