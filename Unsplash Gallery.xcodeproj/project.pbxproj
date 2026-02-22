@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F5386C22F4B2B8A00A1D08F /* UIViewContrller + Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5386C12F4B2B7400A1D08F /* UIViewContrller + Extension.swift */; };
 		1FD924552F4A052E006A7A6A /* WatefallLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD924542F4A052E006A7A6A /* WatefallLayout.swift */; };
 		1FED34AB2F49A79F005062F8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1FED34A42F49A79F005062F8 /* Assets.xcassets */; };
 		1FED34AD2F49A79F005062F8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1FED34A72F49A79F005062F8 /* LaunchScreen.storyboard */; };
@@ -23,6 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1F5386C12F4B2B7400A1D08F /* UIViewContrller + Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewContrller + Extension.swift"; sourceTree = "<group>"; };
 		1F725DAF2F49A703007DF68D /* Unsplash Gallery.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Unsplash Gallery.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FD924542F4A052E006A7A6A /* WatefallLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatefallLayout.swift; sourceTree = "<group>"; };
 		1FED34A32F49A79F005062F8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -70,6 +72,7 @@
 		1FED34A22F49A79F005062F8 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				1F5386C12F4B2B7400A1D08F /* UIViewContrller + Extension.swift */,
 				1FED34B12F49A7AE005062F8 /* MainScreen.swift */,
 				1FED34B52F49A7C6005062F8 /* DetailsScreen.swift */,
 				1FED34B32F49A7B9005062F8 /* FavoriteScreen.swift */,
@@ -186,6 +189,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F5386C22F4B2B8A00A1D08F /* UIViewContrller + Extension.swift in Sources */,
 				1FD924552F4A052E006A7A6A /* WatefallLayout.swift in Sources */,
 				1FED34C02F49A8B1005062F8 /* FeedCell.swift in Sources */,
 				1FED34B22F49A7AE005062F8 /* MainScreen.swift in Sources */,
