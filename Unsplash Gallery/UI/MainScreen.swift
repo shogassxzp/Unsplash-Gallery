@@ -23,13 +23,12 @@ final class MainScreen: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupNavigationBarTitle(text: "Feed", imageName: "house")
         collection.configure(with: photos)
     }
 
     private func setupUI() {
-        title = "Feed"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.largeTitleDisplayMode = .always
+        
         view.addSubview(collection)
         view.backgroundColor = .backgroundAdaptive
         collection.translatesAutoresizingMaskIntoConstraints = false
@@ -42,4 +41,5 @@ final class MainScreen: UIViewController {
             collection.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
+    
 }
