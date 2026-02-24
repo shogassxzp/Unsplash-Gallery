@@ -8,6 +8,17 @@
 import UIKit
 // TODO: - Double tap recognizer
 final class FeedCell: UICollectionViewCell {
+    private let likeHeartView: UIImageView = {
+        let likeView = UIImageView()
+        likeView.image = UIImage(systemName: "heart.fill")
+        likeView.tintColor = .redUniversal
+        likeView.contentMode = .scaleAspectFit
+        likeView.alpha = 0
+        likeView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+        likeView.translatesAutoresizingMaskIntoConstraints = false
+        return likeView
+    }()
+
     private var imageId: String?
     var collectionImageView = UIImageView()
     var shadowView = UIView()
@@ -24,7 +35,7 @@ final class FeedCell: UICollectionViewCell {
     }
 
     private func setupCell() {
-        [shadowView, collectionImageView].forEach {
+        [shadowView, collectionImageView, likeHeartView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview($0)
         }
@@ -53,6 +64,32 @@ final class FeedCell: UICollectionViewCell {
             collectionImageView.trailingAnchor.constraint(equalTo: shadowView.trailingAnchor),
             collectionImageView.topAnchor.constraint(equalTo: shadowView.topAnchor),
             collectionImageView.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor),
+
+            likeHeartView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            likeHeartView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            likeHeartView.widthAnchor.constraint(equalToConstant: 80),
+            likeHeartView.heightAnchor.constraint(equalToConstant: 80),
         ])
+    }
+    
+    func showLikeAnimation() {
+        likeHeartView.alpha = 0
+        likeHeartView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+        
+        UIView.animate(
+            withDuration: 0.5,
+            delay: 0,
+            usingSpringWithDamping: 0.5,
+            initialSpringVelocity: 0.5,
+            options: .curveEaseOut
+        ) {
+            self.likeHeartView.alpha = 1
+            self.likeHeartView.transform = .identity
+        } completion: { _ in
+            UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseIn) {
+                self.likeHeartView.alpha = 0
+                self.likeHeartView.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
+            }
+        }
     }
 }
