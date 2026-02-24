@@ -58,7 +58,25 @@ final class DetailsScreenViewController: UIViewController {
         return button
     }()
 
-    // MARK: - View Did Load
+    // MARK: - ViewDidAppear
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        if #available(iOS 26.0, *) {
+            navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = false
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        if #available(iOS 26.0, *) {
+            navigationController?.interactiveContentPopGestureRecognizer?.isEnabled = true
+        }
+    }
+
+    // MARK: - ViewDidLoad
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -147,14 +165,16 @@ final class DetailsScreenViewController: UIViewController {
             tempImageView.alpha = 0
 
             self.detailsImageView.transform = .identity
-            self.descriptionLabel.alpha = 0.5
-            self.publishedLabel.alpha = 0.5
-            self.shootedOnLabel.alpha = 0.5
-            
-            self.descriptionLabel.alpha = 1.0
-            self.publishedLabel.alpha = 1.0
-            self.shootedOnLabel.alpha = 1.0
+            self.descriptionLabel.alpha = 0
+            self.publishedLabel.alpha = 0
+            self.shootedOnLabel.alpha = 0
+
         }) { _ in
+            UIView.animate(withDuration: 0.2) {
+                self.descriptionLabel.alpha = 1.0
+                self.publishedLabel.alpha = 1.0
+                self.shootedOnLabel.alpha = 1.0
+            }
             tempImageView.removeFromSuperview()
         }
     }

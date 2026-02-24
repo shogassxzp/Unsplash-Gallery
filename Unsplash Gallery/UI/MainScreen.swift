@@ -25,14 +25,22 @@ final class MainScreen: UIViewController {
         setupUI()
         setupNavigationBarTitle(text: "Feed", imageName: "house")
         collection.configure(with: photos)
+        collection.onPhotoTap = { [weak self] index in
+            guard let self = self else { return }
+            
+            let selectedPhoto = self.photos[index]
+            
+            let detailsViewController = DetailsScreenViewController()
+            detailsViewController.hidesBottomBarWhenPushed = true
+            self.navigationController?.pushViewController(detailsViewController, animated: true)
+            
+        }
     }
 
     private func setupUI() {
-        
         view.addSubview(collection)
         view.backgroundColor = .backgroundAdaptive
         collection.translatesAutoresizingMaskIntoConstraints = false
-        
 
         NSLayoutConstraint.activate([
             collection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -41,5 +49,4 @@ final class MainScreen: UIViewController {
             collection.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
-    
 }

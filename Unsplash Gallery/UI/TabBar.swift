@@ -8,29 +8,18 @@
 import UIKit
 
 final class TabBarController: UITabBarController {
-    private let mainScreenController = UINavigationController(rootViewController: MainScreen(photos: [.mock, .mock1, .mock2,.mock3,.mock4]))
-    private let detailsScreenController = DetailsScreenViewController()
-    private let favouriteScreenController = UINavigationController(rootViewController: FavouriteViewController(favouritePhotos: [.mock, .mock1, .mock2,.mock3,.mock4]))
-
+    let mainViewController = MainScreen(photos: [.mock,.mock1,.mock2,.mock3,.mock4])
+    let favouriteViewController = FavouriteViewController(favouritePhotos: [.mock,.mock1,.mock2,.mock3,.mock4])
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        mainScreenController.tabBarItem = UITabBarItem(
-            title: "flow",
-            image: UIImage(systemName: "house"),
-            selectedImage: UIImage(systemName: "house")
-        )
-        detailsScreenController.tabBarItem = UITabBarItem(
-            title: "details",
-            image: UIImage(systemName: "house"),
-            selectedImage: UIImage(systemName: "house")
-        )
-        favouriteScreenController.tabBarItem = UITabBarItem(
-            title: "fav",
-            image: UIImage(systemName: "heart"),
-            selectedImage: UIImage(systemName: "heart")
-        )
-        viewControllers = [mainScreenController, detailsScreenController, favouriteScreenController]
+        let mainNavigationController = UINavigationController(rootViewController: mainViewController)
+        let favouriteNavigationController = UINavigationController(rootViewController: favouriteViewController)
+        
+        mainNavigationController.tabBarItem = UITabBarItem(title: "Flow", image: UIImage(systemName: "house"), tag: 0)
+        favouriteNavigationController.tabBarItem = UITabBarItem(title: "Fav", image: UIImage(systemName: "heart"), tag: 1)
+        
+        viewControllers = [mainNavigationController, favouriteNavigationController]
         tabBar.tintColor = .white
         tabBar.backgroundColor = .clear
         tabBar.tintColor = .green // also test

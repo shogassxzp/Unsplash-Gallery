@@ -10,6 +10,7 @@ import UIKit
 final class FeedCollection: UICollectionView {
     private var photos: [UIImage] = []
     private var selectedIndexPath: IndexPath?
+    var onPhotoTap: ((Int) -> Void)?
 
     init() {
         let layout = UICollectionViewLayout.createLayout()
@@ -30,13 +31,12 @@ final class FeedCollection: UICollectionView {
         translatesAutoresizingMaskIntoConstraints = false
         showsVerticalScrollIndicator = false
     }
-    
+
     func configure(with photos: [UIImage]) {
         self.photos = photos
-        self.reloadData()
+        reloadData()
     }
 }
-
 
 extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -49,5 +49,9 @@ extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
         }
         cell.collectionImageView.image = photos[indexPath.item]
         return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        onPhotoTap?(indexPath.item)
     }
 }
