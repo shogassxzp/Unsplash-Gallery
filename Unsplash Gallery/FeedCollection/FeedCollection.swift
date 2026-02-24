@@ -16,6 +16,7 @@ final class FeedCollection: UICollectionView {
         let layout = UICollectionViewLayout.createLayout()
         super.init(frame: .zero, collectionViewLayout: layout)
         setupCollection()
+        setupDoubleTap()
     }
 
     required init?(coder: NSCoder) {
@@ -30,6 +31,30 @@ final class FeedCollection: UICollectionView {
         allowsMultipleSelection = false
         translatesAutoresizingMaskIntoConstraints = false
         showsVerticalScrollIndicator = false
+    }
+
+    private func setupDoubleTap() {
+        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
+        doubleTap.numberOfTapsRequired = 2
+        doubleTap.delaysTouchesBegan = true
+        addGestureRecognizer(doubleTap)
+
+        if let singleTap = gestureRecognizers?.first(where: {
+            String(describing: type(of: $0)).contains("Touch") || $0 is UITapGestureRecognizer
+        }) {
+            singleTap.require(toFail: doubleTap)
+        }
+    }
+
+    @objc private func handleDoubleTap(_ gesture: UITapGestureRecognizer) {
+        let point = gesture.location(in: self)
+
+        if let indexPath = indexPathForItem(at: point),
+           let cell = cellForItem(at: indexPath) as? FeedCell {
+            cell.showLikeAnimation()
+
+            print("Set like for \(indexPath.item)")
+        }
     }
 
     func configure(with photos: [UIImage]) {
