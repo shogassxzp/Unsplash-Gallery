@@ -5,8 +5,9 @@
 //  Created by Игнат Рогачевич on 21.02.26.
 //
 
+import Kingfisher
 import UIKit
-// TODO: - Double tap recognizer
+
 final class FeedCell: UICollectionViewCell {
     private let likeHeartView: UIImageView = {
         let likeView = UIImageView()
@@ -32,6 +33,12 @@ final class FeedCell: UICollectionViewCell {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        collectionImageView.kf.cancelDownloadTask()
+        collectionImageView.image = nil
     }
 
     private func setupCell() {
@@ -71,11 +78,11 @@ final class FeedCell: UICollectionViewCell {
             likeHeartView.heightAnchor.constraint(equalToConstant: 80),
         ])
     }
-    
+
     func showLikeAnimation() {
         likeHeartView.alpha = 0
         likeHeartView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-        
+
         UIView.animate(
             withDuration: 0.5,
             delay: 0,
@@ -91,5 +98,21 @@ final class FeedCell: UICollectionViewCell {
                 self.likeHeartView.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
             }
         }
+    }
+}
+
+extension FeedCell {
+    func configure(with urlString: String) {
+        guard let url = URL(string: urlString) else { return }
+        collectionImageView.kf.indicatorType = .activity
+        
+        collectionImageView.kf.setImage(
+            with: url,
+            placeholder: UIImage(resource: .mock),
+            options: [
+                .transition(.fade(0.25)),
+                .cacheSerializer(FormatIndicatedCacheSerializer.jpeg)
+            ]
+        )
     }
 }

@@ -80,7 +80,8 @@ extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FeedCell.reuseIdentifier, for: indexPath) as? FeedCell else {
             return UICollectionViewCell()
         }
-        cell.collectionImageView.image = photos[indexPath.item]
+        let testURL = "https://images.unsplash.com/photo-1506744038136-46273834b3fb"
+        cell.configure(with: testURL)
         return cell
     }
 

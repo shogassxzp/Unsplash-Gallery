@@ -77,6 +77,7 @@ final class AuthViewController: UIViewController, WebViewViewControllerDelegate 
                     self.navigationController?.popViewController(animated: true)
                 }
             case let .failure(error):
+                print(error)
             }
         }
     }
