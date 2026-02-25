@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1F5386C22F4B2B8A00A1D08F /* UIViewContrller + Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5386C12F4B2B7400A1D08F /* UIViewContrller + Extension.swift */; };
+		1F738D712F4EEC650003BC35 /* PhotoResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F738D702F4EEC650003BC35 /* PhotoResult.swift */; };
 		1FD924552F4A052E006A7A6A /* WatefallLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD924542F4A052E006A7A6A /* WatefallLayout.swift */; };
 		1FED34AB2F49A79F005062F8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1FED34A42F49A79F005062F8 /* Assets.xcassets */; };
 		1FED34AD2F49A79F005062F8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1FED34A72F49A79F005062F8 /* LaunchScreen.storyboard */; };
@@ -26,6 +27,7 @@
 /* Begin PBXFileReference section */
 		1F5386C12F4B2B7400A1D08F /* UIViewContrller + Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewContrller + Extension.swift"; sourceTree = "<group>"; };
 		1F725DAF2F49A703007DF68D /* Unsplash Gallery.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Unsplash Gallery.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F738D702F4EEC650003BC35 /* PhotoResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoResult.swift; sourceTree = "<group>"; };
 		1FD924542F4A052E006A7A6A /* WatefallLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatefallLayout.swift; sourceTree = "<group>"; };
 		1FED34A32F49A79F005062F8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1FED34A42F49A79F005062F8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -69,6 +71,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		1F738D6E2F4EEC400003BC35 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				1F738D6F2F4EEC580003BC35 /* Models */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		1F738D6F2F4EEC580003BC35 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				1F738D702F4EEC650003BC35 /* PhotoResult.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		1FED34A22F49A79F005062F8 /* UI */ = {
 			isa = PBXGroup;
 			children = (
@@ -94,6 +112,7 @@
 				1FED34A72F49A79F005062F8 /* LaunchScreen.storyboard */,
 				1FED34A82F49A79F005062F8 /* SceneDelegate.swift */,
 				1FED34A92F49A79F005062F8 /* ViewController.swift */,
+				1F738D6E2F4EEC400003BC35 /* Networking */,
 			);
 			path = "Unsplash Gallery";
 			sourceTree = "<group>";
@@ -198,6 +217,7 @@
 				1FED34B02F49A79F005062F8 /* ViewController.swift in Sources */,
 				1FED34B42F49A7B9005062F8 /* FavoriteScreen.swift in Sources */,
 				1FED34B62F49A7C6005062F8 /* DetailsScreen.swift in Sources */,
+				1F738D712F4EEC650003BC35 /* PhotoResult.swift in Sources */,
 				1FED34B82F49A7CD005062F8 /* TabBar.swift in Sources */,
 				1FED34BC2F49A8A0005062F8 /* FeedCollection.swift in Sources */,
 			);
