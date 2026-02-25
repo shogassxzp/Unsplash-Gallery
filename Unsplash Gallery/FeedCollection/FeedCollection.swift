@@ -24,7 +24,6 @@ final class FeedCollection: UICollectionView {
         super.init(frame: .zero, collectionViewLayout: layout)
         setupCollection()
         setupDoubleTap()
-        setupLongPress()
     }
 
     required init?(coder: NSCoder) {
@@ -55,7 +54,7 @@ final class FeedCollection: UICollectionView {
     }
 
     @objc private func handleDoubleTap(_ gesture: UITapGestureRecognizer) {
-        guard mode == .feed, gesture.state == .began else { return }
+        guard mode == .feed, gesture.state == .ended else { return }
         let point = gesture.location(in: self)
 
         if let indexPath = indexPathForItem(at: point),
@@ -63,21 +62,6 @@ final class FeedCollection: UICollectionView {
             cell.showLikeAnimation()
 
             print("Set like for \(indexPath.item)")
-        }
-    }
-
-    private func setupLongPress() {
-        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
-        longPress.minimumPressDuration = 0.5
-        addGestureRecognizer(longPress)
-    }
-
-    @objc private func handleLongPress(_ gesture: UILongPressGestureRecognizer) {
-        guard mode == .favourites, gesture.state == .began else { return }
-        let point = gesture.location(in: self)
-        if let indexPath = indexPathForItem(at: point) {
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-            onDeletePhoto?(indexPath.item)
         }
     }
 
@@ -102,5 +86,20 @@ extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         onPhotoTap?(indexPath.item)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        guard mode == .favourites else { return nil }
+        guard let indexPath = indexPaths.first else { return nil }
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            let deleteAction = UIAction(
+                title: "Delete from favourite",
+                image: UIImage(systemName: "trash"),
+                attributes: .destructive
+            ) { [weak self] _ in
+                self?.onDeletePhoto?(indexPath.item)
+            }
+            return UIMenu(title: "", children: [deleteAction])
+        }
     }
 }
