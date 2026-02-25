@@ -7,16 +7,24 @@
 
 import UIKit
 
+enum FeedMode {
+    case feed
+    case favourites
+}
+
 final class FeedCollection: UICollectionView {
+    var mode: FeedMode = .feed
     private var photos: [UIImage] = []
     private var selectedIndexPath: IndexPath?
     var onPhotoTap: ((Int) -> Void)?
+    var onDeletePhoto: ((Int) -> Void)?
 
     init() {
         let layout = UICollectionViewLayout.createLayout()
         super.init(frame: .zero, collectionViewLayout: layout)
         setupCollection()
         setupDoubleTap()
+        setupLongPress()
     }
 
     required init?(coder: NSCoder) {
@@ -47,6 +55,7 @@ final class FeedCollection: UICollectionView {
     }
 
     @objc private func handleDoubleTap(_ gesture: UITapGestureRecognizer) {
+        guard mode == .feed, gesture.state == .began else { return }
         let point = gesture.location(in: self)
 
         if let indexPath = indexPathForItem(at: point),
@@ -54,6 +63,21 @@ final class FeedCollection: UICollectionView {
             cell.showLikeAnimation()
 
             print("Set like for \(indexPath.item)")
+        }
+    }
+
+    private func setupLongPress() {
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
+        longPress.minimumPressDuration = 0.5
+        addGestureRecognizer(longPress)
+    }
+
+    @objc private func handleLongPress(_ gesture: UILongPressGestureRecognizer) {
+        guard mode == .favourites, gesture.state == .began else { return }
+        let point = gesture.location(in: self)
+        if let indexPath = indexPathForItem(at: point) {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            onDeletePhoto?(indexPath.item)
         }
     }
 

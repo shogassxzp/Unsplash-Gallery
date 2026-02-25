@@ -40,6 +40,7 @@ final class MainScreen: UIViewController {
     private func setupUI() {
         view.addSubview(collection)
         view.backgroundColor = .backgroundAdaptive
+        collection.mode = .feed
         collection.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([

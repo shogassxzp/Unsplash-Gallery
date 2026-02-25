@@ -10,7 +10,6 @@ import UIKit
 final class FavouriteViewController: UIViewController {
     private var favouritePhotos: [UIImage]
     private var collection = FeedCollection()
-
     init(favouritePhotos: [UIImage]) {
         self.favouritePhotos = favouritePhotos
         super.init(nibName: nil, bundle: nil)
@@ -29,7 +28,7 @@ final class FavouriteViewController: UIViewController {
 
     private func setupUI() {
         view.backgroundColor = .backgroundAdaptive
-
+        collection.mode = .favourites
         collection.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collection)
 
