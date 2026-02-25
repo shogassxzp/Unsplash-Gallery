@@ -7,10 +7,17 @@
 
 import UIKit
 
+enum FeedMode {
+    case feed
+    case favourites
+}
+
 final class FeedCollection: UICollectionView {
+    var mode: FeedMode = .feed
     private var photos: [UIImage] = []
     private var selectedIndexPath: IndexPath?
     var onPhotoTap: ((Int) -> Void)?
+    var onDeletePhoto: ((Int) -> Void)?
 
     init() {
         let layout = UICollectionViewLayout.createLayout()
@@ -47,6 +54,7 @@ final class FeedCollection: UICollectionView {
     }
 
     @objc private func handleDoubleTap(_ gesture: UITapGestureRecognizer) {
+        guard mode == .feed, gesture.state == .ended else { return }
         let point = gesture.location(in: self)
 
         if let indexPath = indexPathForItem(at: point),
@@ -78,5 +86,20 @@ extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         onPhotoTap?(indexPath.item)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        guard mode == .favourites else { return nil }
+        guard let indexPath = indexPaths.first else { return nil }
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            let deleteAction = UIAction(
+                title: "Delete from favourite",
+                image: UIImage(systemName: "trash"),
+                attributes: .destructive
+            ) { [weak self] _ in
+                self?.onDeletePhoto?(indexPath.item)
+            }
+            return UIMenu(title: "", children: [deleteAction])
+        }
     }
 }
