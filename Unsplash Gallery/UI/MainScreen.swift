@@ -11,6 +11,7 @@ final class MainScreen: UIViewController {
     private let collection = FeedCollection()
     private var photos: [UIImage]
 
+
     init(photos: [UIImage]) {
         self.photos = photos
         super.init(nibName: nil, bundle: nil)
@@ -27,13 +28,12 @@ final class MainScreen: UIViewController {
         collection.configure(with: photos)
         collection.onPhotoTap = { [weak self] index in
             guard let self = self else { return }
-            
+
             let selectedPhoto = self.photos[index]
-            
+
             let detailsViewController = DetailsScreenViewController()
             detailsViewController.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(detailsViewController, animated: true)
-            
         }
     }
 

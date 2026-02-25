@@ -14,6 +14,8 @@ enum FeedMode {
 
 final class FeedCollection: UICollectionView {
     var mode: FeedMode = .feed
+    private let imageListService = ImageListService.shared
+    private var imageListObserver: NSObjectProtocol?
     private var photos: [UIImage] = []
     private var selectedIndexPath: IndexPath?
     var onPhotoTap: ((Int) -> Void)?
@@ -24,10 +26,27 @@ final class FeedCollection: UICollectionView {
         super.init(frame: .zero, collectionViewLayout: layout)
         setupCollection()
         setupDoubleTap()
+        setupObserver()
+//        imageListService.fetchPhotosNextPage()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    private func setupObserver() {
+        imageListObserver = NotificationCenter.default.addObserver(
+            forName: ImageListService.didChangeNotification,
+            object: nil,
+            queue: .main,
+        ) { [weak self] _ in
+            self?.updateCollectionViewAnimated()
+        }
+        imageListService.fetchPhotosNextPage()
+    }
+
+    private func updateCollectionViewAnimated() {
+        reloadData()
     }
 
     private func setupCollection() {
@@ -73,15 +92,23 @@ final class FeedCollection: UICollectionView {
 
 extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        photos.count
+        imageListService.photos.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if indexPath.row + 1 == imageListService.photos.count {
+            imageListService.fetchPhotosNextPage()
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FeedCell.reuseIdentifier, for: indexPath) as? FeedCell else {
             return UICollectionViewCell()
         }
-        let testURL = "https://images.unsplash.com/photo-1506744038136-46273834b3fb"
-        cell.configure(with: testURL)
+        if indexPath.row < imageListService.photos.count {
+            let photo = imageListService.photos[indexPath.row]
+            cell.configure(with: photo.urls.thumb)
+        }
         return cell
     }
 
