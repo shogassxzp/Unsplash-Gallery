@@ -12,7 +12,6 @@
 		1F738D742F4EED8F0003BC35 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 1F738D732F4EED8F0003BC35 /* Kingfisher */; };
 		1F738D772F4EEDDA0003BC35 /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 1F738D762F4EEDDA0003BC35 /* ProgressHUD */; };
 		1F738D7A2F4EEEA90003BC35 /* SwiftKeychainWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = 1F738D792F4EEEA90003BC35 /* SwiftKeychainWrapper */; };
-		1F738D7C2F4EEF250003BC35 /* Keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F738D7B2F4EEF250003BC35 /* Keys.plist */; };
 		1F738D7E2F4EF0CA0003BC35 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F738D7D2F4EF0CA0003BC35 /* Constants.swift */; };
 		1F738D812F4EF34F0003BC35 /* AuthConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F738D802F4EF34F0003BC35 /* AuthConfiguration.swift */; };
 		1F738D852F4EF3680003BC35 /* OAuth2TokenStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F738D842F4EF3680003BC35 /* OAuth2TokenStorage.swift */; };
@@ -27,6 +26,7 @@
 		1F738DDF2F4EF7850003BC35 /* URLSession+data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F738DDE2F4EF7850003BC35 /* URLSession+data.swift */; };
 		1F738E2D2F4F0D050003BC35 /* ImageListService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F738E2C2F4F0D050003BC35 /* ImageListService.swift */; };
 		1F913E262F501F8400C04C25 /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F913E252F501F8400C04C25 /* ProfileService.swift */; };
+		1F913E2A2F50654C00C04C25 /* Keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F913E292F50654C00C04C25 /* Keys.plist */; };
 		1FD924552F4A052E006A7A6A /* WatefallLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD924542F4A052E006A7A6A /* WatefallLayout.swift */; };
 		1FED34AB2F49A79F005062F8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1FED34A42F49A79F005062F8 /* Assets.xcassets */; };
 		1FED34AD2F49A79F005062F8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1FED34A72F49A79F005062F8 /* LaunchScreen.storyboard */; };
@@ -46,7 +46,6 @@
 		1F5386C12F4B2B7400A1D08F /* UIViewContrller + Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewContrller + Extension.swift"; sourceTree = "<group>"; };
 		1F725DAF2F49A703007DF68D /* Unsplash Gallery.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Unsplash Gallery.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F738D702F4EEC650003BC35 /* PhotoResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoResult.swift; sourceTree = "<group>"; };
-		1F738D7B2F4EEF250003BC35 /* Keys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Keys.plist; sourceTree = "<group>"; };
 		1F738D7D2F4EF0CA0003BC35 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		1F738D802F4EF34F0003BC35 /* AuthConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthConfiguration.swift; sourceTree = "<group>"; };
 		1F738D842F4EF3680003BC35 /* OAuth2TokenStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuth2TokenStorage.swift; sourceTree = "<group>"; };
@@ -61,6 +60,7 @@
 		1F738DDE2F4EF7850003BC35 /* URLSession+data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSession+data.swift"; sourceTree = "<group>"; };
 		1F738E2C2F4F0D050003BC35 /* ImageListService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageListService.swift; sourceTree = "<group>"; };
 		1F913E252F501F8400C04C25 /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
+		1F913E292F50654C00C04C25 /* Keys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Keys.plist; sourceTree = "<group>"; };
 		1FD924542F4A052E006A7A6A /* WatefallLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatefallLayout.swift; sourceTree = "<group>"; };
 		1FED34A32F49A79F005062F8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1FED34A42F49A79F005062F8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -94,7 +94,7 @@
 		1F725DA62F49A703007DF68D = {
 			isa = PBXGroup;
 			children = (
-				1F738D7B2F4EEF250003BC35 /* Keys.plist */,
+				1F913E292F50654C00C04C25 /* Keys.plist */,
 				1FED34AA2F49A79F005062F8 /* Unsplash Gallery */,
 				1F725DB02F49A703007DF68D /* Products */,
 			);
@@ -310,7 +310,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F738D7C2F4EEF250003BC35 /* Keys.plist in Resources */,
+				1F913E2A2F50654C00C04C25 /* Keys.plist in Resources */,
 				1FED35C92F49B110005062F8 /* Main.storyboard in Resources */,
 				1FED34AB2F49A79F005062F8 /* Assets.xcassets in Resources */,
 				1FED34AD2F49A79F005062F8 /* LaunchScreen.storyboard in Resources */,

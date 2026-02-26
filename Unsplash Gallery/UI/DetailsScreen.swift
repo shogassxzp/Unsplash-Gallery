@@ -19,7 +19,9 @@ final class DetailsScreenViewController: UIViewController {
         details.layer.cornerRadius = 24
         details.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         details.clipsToBounds = true
-        details.image = .mock1
+        details.kf.indicatorType = .activity
+        details.backgroundColor = .blackAdaptive
+        details.tintColor = .backgroundAdaptive
         return details
     }()
 
@@ -188,7 +190,7 @@ final class DetailsScreenViewController: UIViewController {
         guard currentIndex < imageListService.photos.count else { return }
         let photos = imageListService.photos[currentIndex]
         
-        detailsImageView.kf.setImage(with: URL(string: photos.urls.full),placeholder: UIImage(resource: .mock))
+        detailsImageView.kf.setImage(with: URL(string: photos.urls.full),placeholder: UIImage(resource: .imagePlaceholder))
         descriptionLabel.text = photos.description ?? "No description"
         publishedLabel.text = "Published: \(photos.createdAt ?? "Unknown")"
         shootedOnLabel.text = "Take camera name from API"
