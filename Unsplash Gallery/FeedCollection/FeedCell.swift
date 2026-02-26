@@ -60,6 +60,8 @@ final class FeedCell: UICollectionViewCell {
         collectionImageView.clipsToBounds = true
         collectionImageView.layer.masksToBounds = true
         collectionImageView.layer.cornerRadius = 16
+        collectionImageView.backgroundColor = .blackAdaptive
+        collectionImageView.tintColor = .backgroundAdaptive
 
         NSLayoutConstraint.activate([
             shadowView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
@@ -105,10 +107,9 @@ extension FeedCell {
     func configure(with urlString: String) {
         guard let url = URL(string: urlString) else { return }
         collectionImageView.kf.indicatorType = .activity
-        
         collectionImageView.kf.setImage(
             with: url,
-            placeholder: UIImage(resource: .mock),
+            placeholder: UIImage(resource: .imagePlaceholder),
             options: [
                 .transition(.fade(0.25)),
                 .cacheSerializer(FormatIndicatedCacheSerializer.jpeg)

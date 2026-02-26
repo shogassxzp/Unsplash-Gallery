@@ -74,19 +74,24 @@ final class FeedCollection: UICollectionView {
         guard mode == .feed, gesture.state == .ended else { return }
         let point = gesture.location(in: self)
 
-        if let indexPath = indexPathForItem(at: point),
-           let cell = cellForItem(at: indexPath) as? FeedCell {
-            let photo = imageListService.photos[indexPath.item]
-            let shouldLike = !photo.likedByUser
+        if let indexPath = indexPathForItem(at: point) {
+            let feedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
+            feedbackGenerator.prepare()
+            feedbackGenerator.impactOccurred()
 
-            cell.showLikeAnimation()
+            if let cell = cellForItem(at: indexPath) as? FeedCell {
+                let photo = imageListService.photos[indexPath.item]
+                let shouldLike = !photo.likedByUser
 
-            imageListService.changeLike(photoId: photo.id, isLike: shouldLike) { result in
-                switch result {
-                case .success:
-                    print("Successfully updated like for \(photo.id)")
-                case let .failure(error):
-                    print("Failed to change like: \(error)")
+                cell.showLikeAnimation()
+
+                imageListService.changeLike(photoId: photo.id, isLike: shouldLike) { result in
+                    switch result {
+                    case .success:
+                        print("Successfully updated like for \(photo.id)")
+                    case let .failure(error):
+                        print("Failed to change like: \(error)")
+                    }
                 }
             }
         }
@@ -128,9 +133,9 @@ extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
                 image: UIImage(systemName: "trash"),
                 attributes: .destructive
             ) { [weak self] _ in
-                guard let self = self else {return}
+                guard let self = self else { return }
                 let photo = self.imageListService.likedPhotos[indexPath.item]
-                
+
                 self.imageListService.changeLike(photoId: photo.id, isLike: false) { [weak self] result in
                     if case .success = result {
                         self?.reloadData()

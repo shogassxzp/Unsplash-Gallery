@@ -22,7 +22,7 @@ final class TabBarController: UITabBarController {
         viewControllers = [mainNavigationController, favouriteNavigationController]
         tabBar.tintColor = .white
         tabBar.backgroundColor = .clear
-        tabBar.tintColor = .green // also test
+        tabBar.tintColor = .blackAdaptive
         tabBar.isTranslucent = true
     }
 }

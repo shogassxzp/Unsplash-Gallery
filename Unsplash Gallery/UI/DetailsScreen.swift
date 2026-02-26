@@ -5,8 +5,8 @@
 //  Created by Игнат Рогачевич on 21.02.26.
 //
 
-import UIKit
 import Kingfisher
+import UIKit
 
 final class DetailsScreenViewController: UIViewController {
     var startIndex: Int = 0
@@ -19,7 +19,9 @@ final class DetailsScreenViewController: UIViewController {
         details.layer.cornerRadius = 24
         details.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         details.clipsToBounds = true
-        details.image = .mock1
+        details.kf.indicatorType = .activity
+        details.backgroundColor = .blackAdaptive
+        details.tintColor = .backgroundAdaptive
         return details
     }()
 
@@ -33,14 +35,14 @@ final class DetailsScreenViewController: UIViewController {
 
     private lazy var publishedLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .semibold)
+        label.font = .systemFont(ofSize: 18, weight: .medium)
         label.textColor = .blackAdaptive
         return label
     }()
 
-    private lazy var shootedOnLabel: UILabel = {
+    private lazy var authorNameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .semibold)
+        label.font = .systemFont(ofSize: 28, weight: .semibold)
         label.textColor = .blackAdaptive
         return label
     }()
@@ -52,6 +54,7 @@ final class DetailsScreenViewController: UIViewController {
         config.image = UIImage(systemName: "heart")
         config.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 24, weight: .semibold)
         config.baseBackgroundColor = .clear
+        config.baseForegroundColor = .redUniversal
         config.background.backgroundColor = .clear
 
         button.configuration = config
@@ -91,7 +94,7 @@ final class DetailsScreenViewController: UIViewController {
     }
 
     private func addSubviews() {
-        [detailsImageView, publishedLabel, descriptionLabel, shootedOnLabel, likeButton].forEach {
+        [detailsImageView, publishedLabel, descriptionLabel, authorNameLabel, likeButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
@@ -102,25 +105,24 @@ final class DetailsScreenViewController: UIViewController {
             detailsImageView.topAnchor.constraint(equalTo: view.topAnchor),
             detailsImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             detailsImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            detailsImageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.75),
+            detailsImageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.7),
 
-            likeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            likeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             likeButton.topAnchor.constraint(equalTo: detailsImageView.bottomAnchor, constant: 16),
             likeButton.widthAnchor.constraint(equalToConstant: 44),
             likeButton.heightAnchor.constraint(equalToConstant: 44),
 
-            descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             descriptionLabel.topAnchor.constraint(equalTo: detailsImageView.bottomAnchor, constant: 20),
             descriptionLabel.trailingAnchor.constraint(equalTo: likeButton.leadingAnchor, constant: -12),
-            descriptionLabel.bottomAnchor.constraint(lessThanOrEqualTo: publishedLabel.topAnchor, constant: -20),
 
-            publishedLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            publishedLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 24),
-            publishedLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            publishedLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            publishedLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            publishedLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
 
-            shootedOnLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            shootedOnLabel.topAnchor.constraint(equalTo: publishedLabel.bottomAnchor, constant: 16),
-            shootedOnLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            authorNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            authorNameLabel.bottomAnchor.constraint(equalTo: publishedLabel.topAnchor, constant: -8),
+            authorNameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
         ])
     }
 
@@ -172,13 +174,13 @@ final class DetailsScreenViewController: UIViewController {
             self.detailsImageView.transform = .identity
             self.descriptionLabel.alpha = 0
             self.publishedLabel.alpha = 0
-            self.shootedOnLabel.alpha = 0
+            self.authorNameLabel.alpha = 0
 
         }) { _ in
             UIView.animate(withDuration: 0.2) {
                 self.descriptionLabel.alpha = 1.0
                 self.publishedLabel.alpha = 1.0
-                self.shootedOnLabel.alpha = 1.0
+                self.authorNameLabel.alpha = 1.0
             }
             tempImageView.removeFromSuperview()
         }
@@ -187,20 +189,39 @@ final class DetailsScreenViewController: UIViewController {
     private func updateUI() {
         guard currentIndex < imageListService.photos.count else { return }
         let photos = imageListService.photos[currentIndex]
-        
-        detailsImageView.kf.setImage(with: URL(string: photos.urls.full),placeholder: UIImage(resource: .mock))
+
+        detailsImageView.kf.setImage(with: URL(string: photos.urls.full), placeholder: UIImage(resource: .imagePlaceholder))
         descriptionLabel.text = photos.description ?? "No description"
-        publishedLabel.text = "Published: \(photos.createdAt ?? "Unknown")"
-        shootedOnLabel.text = "Take camera name from API"
-        
+        authorNameLabel.text = "username username"
+
+        if let formattedDate = photos.createdAt?.toReadableDate() {
+            publishedLabel.text = "Published at: \(formattedDate)"
+        } else {
+            publishedLabel.text = "Publication date unknown"
+        }
+
         let imageName = photos.likedByUser ? "heart.fill" : "heart"
         likeButton.configuration?.image = UIImage(systemName: imageName)
     }
 
     @objc private func heartTapped() {
-        likeButton.isSelected.toggle()
+        let photo = imageListService.photos[currentIndex]
+        let newLikeState = !photo.likedByUser
 
-        let imageName = likeButton.isSelected ? "heart.fill" : "heart"
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+
+        updateLikeStatusUI(isLiked: newLikeState)
+
+        imageListService.changeLike(photoId: photo.id, isLike: newLikeState) { [weak self] result in
+            if case .failure = result {
+                self?.updateLikeStatusUI(isLiked: photo.likedByUser)
+            }
+        }
+    }
+
+    private func updateLikeStatusUI(isLiked: Bool) {
+        let imageName = isLiked ? "heart.fill" : "heart"
         likeButton.configuration?.image = UIImage(systemName: imageName)
 
         UIView.animate(withDuration: 0.1, animations: {
@@ -210,5 +231,12 @@ final class DetailsScreenViewController: UIViewController {
                 self.likeButton.transform = .identity
             }
         }
+    }
+
+    private func updateLikeButton(isLiked: Bool) {
+        let imageName = isLiked ? "heart.fill" : "heart"
+        likeButton.configuration?.image = UIImage(systemName: imageName)
+
+        likeButton.isSelected = isLiked
     }
 }
