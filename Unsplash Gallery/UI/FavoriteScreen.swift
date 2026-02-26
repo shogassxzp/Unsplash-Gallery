@@ -10,6 +10,13 @@ import UIKit
 final class FavouriteViewController: UIViewController {
     private var collection = FeedCollection()
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        ImageListService.shared.resetLikedPhotos()
+        collection.reloadData()
+        ImageListService.shared.fethcLikedPhotosNextPage()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -19,7 +26,6 @@ final class FavouriteViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .backgroundAdaptive
         collection.mode = .favourites
-        ImageListService.shared.fethcLikedPhotosNextPage()
         collection.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collection)
 

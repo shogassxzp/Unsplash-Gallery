@@ -107,6 +107,10 @@ final class ImageListService {
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         return request
     }
+    func resetLikedPhotos() {
+        likedPhotos = []
+        lastLoadedPageLiked = nil
+    }
     
     func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void) {
         assert(Thread.isMainThread)
