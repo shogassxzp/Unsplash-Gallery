@@ -40,7 +40,7 @@ final class DetailsScreenViewController: UIViewController {
         return label
     }()
 
-    private lazy var shootedOnLabel: UILabel = {
+    private lazy var authorNameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 13, weight: .semibold)
         label.textColor = .blackAdaptive
@@ -94,7 +94,7 @@ final class DetailsScreenViewController: UIViewController {
     }
 
     private func addSubviews() {
-        [detailsImageView, publishedLabel, descriptionLabel, shootedOnLabel, likeButton].forEach {
+        [detailsImageView, publishedLabel, descriptionLabel, authorNameLabel, likeButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
@@ -121,9 +121,9 @@ final class DetailsScreenViewController: UIViewController {
             publishedLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 24),
             publishedLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
 
-            shootedOnLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            shootedOnLabel.topAnchor.constraint(equalTo: publishedLabel.bottomAnchor, constant: 16),
-            shootedOnLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            authorNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            authorNameLabel.topAnchor.constraint(equalTo: publishedLabel.bottomAnchor, constant: 16),
+            authorNameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
         ])
     }
 
@@ -175,13 +175,13 @@ final class DetailsScreenViewController: UIViewController {
             self.detailsImageView.transform = .identity
             self.descriptionLabel.alpha = 0
             self.publishedLabel.alpha = 0
-            self.shootedOnLabel.alpha = 0
+            self.authorNameLabel.alpha = 0
 
         }) { _ in
             UIView.animate(withDuration: 0.2) {
                 self.descriptionLabel.alpha = 1.0
                 self.publishedLabel.alpha = 1.0
-                self.shootedOnLabel.alpha = 1.0
+                self.authorNameLabel.alpha = 1.0
             }
             tempImageView.removeFromSuperview()
         }
@@ -193,9 +193,14 @@ final class DetailsScreenViewController: UIViewController {
 
         detailsImageView.kf.setImage(with: URL(string: photos.urls.full), placeholder: UIImage(resource: .imagePlaceholder))
         descriptionLabel.text = photos.description ?? "No description"
-        publishedLabel.text = "Published: \(photos.createdAt ?? "Unknown")"
-        shootedOnLabel.text = "Take camera name from API"
-
+        authorNameLabel.text = "username username"
+        
+        if let formattedDate = photos.createdAt?.toReadableDate() {
+            publishedLabel.text = "Published at: \(formattedDate)"
+        } else {
+            publishedLabel.text = "Publication date unknown"
+        }
+       
         let imageName = photos.likedByUser ? "heart.fill" : "heart"
         likeButton.configuration?.image = UIImage(systemName: imageName)
     }
