@@ -16,7 +16,6 @@ final class FeedCollection: UICollectionView {
     var mode: FeedMode = .feed
     private let imageListService = ImageListService.shared
     private var imageListObserver: NSObjectProtocol?
-    private var photos: [UIImage] = []
     private var selectedIndexPath: IndexPath?
     var onPhotoTap: ((Int) -> Void)?
     var onDeletePhoto: ((Int) -> Void)?
@@ -27,7 +26,6 @@ final class FeedCollection: UICollectionView {
         setupCollection()
         setupDoubleTap()
         setupObserver()
-//        imageListService.fetchPhotosNextPage()
     }
 
     required init?(coder: NSCoder) {
@@ -82,11 +80,6 @@ final class FeedCollection: UICollectionView {
 
             print("Set like for \(indexPath.item)")
         }
-    }
-
-    func configure(with photos: [UIImage]) {
-        self.photos = photos
-        reloadData()
     }
 }
 

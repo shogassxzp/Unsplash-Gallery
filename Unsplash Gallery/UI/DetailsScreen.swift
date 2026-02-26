@@ -6,10 +6,12 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class DetailsScreenViewController: UIViewController {
+    var startIndex: Int = 0
     private var currentIndex: Int = 0
-    private var photos: [UIImage] = [.mock, .mock1, .mock2]
+    private let imageListService = ImageListService.shared
 
     private lazy var detailsImageView: UIImageView = {
         let details = UIImageView()
@@ -81,6 +83,7 @@ final class DetailsScreenViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .backgroundAdaptive
+        currentIndex = startIndex
         addSubviews()
         setupLayout()
         setupGesture()
@@ -133,9 +136,11 @@ final class DetailsScreenViewController: UIViewController {
 
     @objc private func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
         if gesture.direction == .left {
-            if currentIndex < photos.count - 1 {
+            if currentIndex < imageListService.photos.count - 1 {
                 currentIndex += 1
                 animateTransition(isNext: true)
+            } else {
+                imageListService.fetchPhotosNextPage()
             }
         } else if gesture.direction == .right {
             if currentIndex > 0 {
@@ -180,10 +185,16 @@ final class DetailsScreenViewController: UIViewController {
     }
 
     private func updateUI() {
-        detailsImageView.image = photos[currentIndex]
-        descriptionLabel.text = "That photo number \(currentIndex). Take description from API"
-        publishedLabel.text = "Take date from API"
+        guard currentIndex < imageListService.photos.count else { return }
+        let photos = imageListService.photos[currentIndex]
+        
+        detailsImageView.kf.setImage(with: URL(string: photos.urls.full),placeholder: UIImage(resource: .mock))
+        descriptionLabel.text = photos.description ?? "No description"
+        publishedLabel.text = "Published: \(photos.createdAt ?? "Unknown")"
         shootedOnLabel.text = "Take camera name from API"
+        
+        let imageName = photos.likedByUser ? "heart.fill" : "heart"
+        likeButton.configuration?.image = UIImage(systemName: imageName)
     }
 
     @objc private func heartTapped() {
