@@ -5,8 +5,8 @@
 //  Created by Игнат Рогачевич on 21.02.26.
 //
 
-import UIKit
 import Kingfisher
+import UIKit
 
 final class DetailsScreenViewController: UIViewController {
     var startIndex: Int = 0
@@ -54,6 +54,7 @@ final class DetailsScreenViewController: UIViewController {
         config.image = UIImage(systemName: "heart")
         config.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 24, weight: .semibold)
         config.baseBackgroundColor = .clear
+        config.baseForegroundColor = .redUniversal
         config.background.backgroundColor = .clear
 
         button.configuration = config
@@ -189,20 +190,34 @@ final class DetailsScreenViewController: UIViewController {
     private func updateUI() {
         guard currentIndex < imageListService.photos.count else { return }
         let photos = imageListService.photos[currentIndex]
-        
-        detailsImageView.kf.setImage(with: URL(string: photos.urls.full),placeholder: UIImage(resource: .imagePlaceholder))
+
+        detailsImageView.kf.setImage(with: URL(string: photos.urls.full), placeholder: UIImage(resource: .imagePlaceholder))
         descriptionLabel.text = photos.description ?? "No description"
         publishedLabel.text = "Published: \(photos.createdAt ?? "Unknown")"
         shootedOnLabel.text = "Take camera name from API"
-        
+
         let imageName = photos.likedByUser ? "heart.fill" : "heart"
         likeButton.configuration?.image = UIImage(systemName: imageName)
     }
 
     @objc private func heartTapped() {
-        likeButton.isSelected.toggle()
+        let photo = imageListService.photos[currentIndex]
+        let newLikeState = !photo.likedByUser
 
-        let imageName = likeButton.isSelected ? "heart.fill" : "heart"
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+
+        updateLikeStatusUI(isLiked: newLikeState)
+
+        imageListService.changeLike(photoId: photo.id, isLike: newLikeState) { [weak self] result in
+            if case .failure = result {
+                self?.updateLikeStatusUI(isLiked: photo.likedByUser)
+            }
+        }
+    }
+
+    private func updateLikeStatusUI(isLiked: Bool) {
+        let imageName = isLiked ? "heart.fill" : "heart"
         likeButton.configuration?.image = UIImage(systemName: imageName)
 
         UIView.animate(withDuration: 0.1, animations: {
@@ -212,5 +227,12 @@ final class DetailsScreenViewController: UIViewController {
                 self.likeButton.transform = .identity
             }
         }
+    }
+
+    private func updateLikeButton(isLiked: Bool) {
+        let imageName = isLiked ? "heart.fill" : "heart"
+        likeButton.configuration?.image = UIImage(systemName: imageName)
+
+        likeButton.isSelected = isLiked
     }
 }
