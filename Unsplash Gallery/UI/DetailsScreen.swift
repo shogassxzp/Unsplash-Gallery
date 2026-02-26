@@ -35,14 +35,14 @@ final class DetailsScreenViewController: UIViewController {
 
     private lazy var publishedLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .semibold)
+        label.font = .systemFont(ofSize: 18, weight: .medium)
         label.textColor = .blackAdaptive
         return label
     }()
 
     private lazy var authorNameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .semibold)
+        label.font = .systemFont(ofSize: 28, weight: .semibold)
         label.textColor = .blackAdaptive
         return label
     }()
@@ -105,25 +105,24 @@ final class DetailsScreenViewController: UIViewController {
             detailsImageView.topAnchor.constraint(equalTo: view.topAnchor),
             detailsImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             detailsImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            detailsImageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.75),
+            detailsImageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.7),
 
-            likeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            likeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             likeButton.topAnchor.constraint(equalTo: detailsImageView.bottomAnchor, constant: 16),
             likeButton.widthAnchor.constraint(equalToConstant: 44),
             likeButton.heightAnchor.constraint(equalToConstant: 44),
 
-            descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             descriptionLabel.topAnchor.constraint(equalTo: detailsImageView.bottomAnchor, constant: 20),
             descriptionLabel.trailingAnchor.constraint(equalTo: likeButton.leadingAnchor, constant: -12),
-            descriptionLabel.bottomAnchor.constraint(lessThanOrEqualTo: publishedLabel.topAnchor, constant: -20),
 
-            publishedLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            publishedLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 24),
-            publishedLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            publishedLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            publishedLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            publishedLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
 
-            authorNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            authorNameLabel.topAnchor.constraint(equalTo: publishedLabel.bottomAnchor, constant: 16),
-            authorNameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            authorNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            authorNameLabel.bottomAnchor.constraint(equalTo: publishedLabel.topAnchor, constant: -8),
+            authorNameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
         ])
     }
 
@@ -194,13 +193,13 @@ final class DetailsScreenViewController: UIViewController {
         detailsImageView.kf.setImage(with: URL(string: photos.urls.full), placeholder: UIImage(resource: .imagePlaceholder))
         descriptionLabel.text = photos.description ?? "No description"
         authorNameLabel.text = "username username"
-        
+
         if let formattedDate = photos.createdAt?.toReadableDate() {
             publishedLabel.text = "Published at: \(formattedDate)"
         } else {
             publishedLabel.text = "Publication date unknown"
         }
-       
+
         let imageName = photos.likedByUser ? "heart.fill" : "heart"
         likeButton.configuration?.image = UIImage(systemName: imageName)
     }
