@@ -19,6 +19,7 @@ final class FavouriteViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .backgroundAdaptive
         collection.mode = .favourites
+        ImageListService.shared.fethcLikedPhotosNextPage()
         collection.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collection)
 

@@ -43,11 +43,26 @@ final class SplashScreenViewController: UIViewController, AuthViewControllerDele
     }
 
     private func checkAuthentication() {
-        guard let token = storage.token else {
+        guard let _ = storage.token else {
             presentAuthView()
             return
         }
-        switchToTabBarController()
+        fetchProfileAndSwitch()
+    }
+    
+    private func fetchProfileAndSwitch() {
+        ProfileService.shared.fetchProfile { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case.success(let username):
+                    print("Profile loaded: \(username)")
+                    self?.switchToTabBarController()
+                case.failure(let error):
+                    print("Profile error: \(error)")
+                }
+            }
+            
+        }
     }
 
     private func switchToTabBarController() {

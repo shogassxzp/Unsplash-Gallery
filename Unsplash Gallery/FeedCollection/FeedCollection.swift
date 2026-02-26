@@ -85,7 +85,7 @@ final class FeedCollection: UICollectionView {
 
 extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        imageListService.photos.count
+        return mode == .feed ? imageListService.photos.count : imageListService.likedPhotos.count
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -99,8 +99,8 @@ extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         if indexPath.row < imageListService.photos.count {
-            let photo = imageListService.photos[indexPath.row]
-            cell.configure(with: photo.urls.thumb)
+            let photo = mode == .feed ? imageListService.photos[indexPath.row] : imageListService.likedPhotos[indexPath.row]
+            cell.configure(with: photo.urls.small)
         }
         return cell
     }
