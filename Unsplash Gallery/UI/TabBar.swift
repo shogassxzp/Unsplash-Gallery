@@ -8,8 +8,8 @@
 import UIKit
 
 final class TabBarController: UITabBarController {
-    let mainViewController = MainScreen(photos: [.mock,.mock1,.mock2,.mock3,.mock4])
-    let favouriteViewController = FavouriteViewController(favouritePhotos: [.mock,.mock1,.mock2,.mock3,.mock4])
+    let mainViewController = MainScreen()
+    let favouriteViewController = FavouriteViewController()
     
     override func viewDidLoad() {
         super.viewDidLoad()

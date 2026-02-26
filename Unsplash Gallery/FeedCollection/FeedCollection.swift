@@ -14,7 +14,8 @@ enum FeedMode {
 
 final class FeedCollection: UICollectionView {
     var mode: FeedMode = .feed
-    private var photos: [UIImage] = []
+    private let imageListService = ImageListService.shared
+    private var imageListObserver: NSObjectProtocol?
     private var selectedIndexPath: IndexPath?
     var onPhotoTap: ((Int) -> Void)?
     var onDeletePhoto: ((Int) -> Void)?
@@ -24,10 +25,26 @@ final class FeedCollection: UICollectionView {
         super.init(frame: .zero, collectionViewLayout: layout)
         setupCollection()
         setupDoubleTap()
+        setupObserver()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    private func setupObserver() {
+        imageListObserver = NotificationCenter.default.addObserver(
+            forName: ImageListService.didChangeNotification,
+            object: nil,
+            queue: .main,
+        ) { [weak self] _ in
+            self?.updateCollectionViewAnimated()
+        }
+        imageListService.fetchPhotosNextPage()
+    }
+
+    private func updateCollectionViewAnimated() {
+        reloadData()
     }
 
     private func setupCollection() {
@@ -59,28 +76,42 @@ final class FeedCollection: UICollectionView {
 
         if let indexPath = indexPathForItem(at: point),
            let cell = cellForItem(at: indexPath) as? FeedCell {
+            let photo = imageListService.photos[indexPath.item]
+            let shouldLike = !photo.likedByUser
+
             cell.showLikeAnimation()
 
-            print("Set like for \(indexPath.item)")
+            imageListService.changeLike(photoId: photo.id, isLike: shouldLike) { result in
+                switch result {
+                case .success:
+                    print("Successfully updated like for \(photo.id)")
+                case let .failure(error):
+                    print("Failed to change like: \(error)")
+                }
+            }
         }
-    }
-
-    func configure(with photos: [UIImage]) {
-        self.photos = photos
-        reloadData()
     }
 }
 
 extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        photos.count
+        return mode == .feed ? imageListService.photos.count : imageListService.likedPhotos.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if indexPath.row + 1 == imageListService.photos.count {
+            imageListService.fetchPhotosNextPage()
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FeedCell.reuseIdentifier, for: indexPath) as? FeedCell else {
             return UICollectionViewCell()
         }
-        cell.collectionImageView.image = photos[indexPath.item]
+        if indexPath.row < imageListService.photos.count {
+            let photo = mode == .feed ? imageListService.photos[indexPath.row] : imageListService.likedPhotos[indexPath.row]
+            cell.configure(with: photo.urls.small)
+        }
         return cell
     }
 
@@ -97,7 +128,14 @@ extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
                 image: UIImage(systemName: "trash"),
                 attributes: .destructive
             ) { [weak self] _ in
-                self?.onDeletePhoto?(indexPath.item)
+                guard let self = self else {return}
+                let photo = self.imageListService.likedPhotos[indexPath.item]
+                
+                self.imageListService.changeLike(photoId: photo.id, isLike: false) { [weak self] result in
+                    if case .success = result {
+                        self?.reloadData()
+                    }
+                }
             }
             return UIMenu(title: "", children: [deleteAction])
         }
