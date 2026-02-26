@@ -76,9 +76,19 @@ final class FeedCollection: UICollectionView {
 
         if let indexPath = indexPathForItem(at: point),
            let cell = cellForItem(at: indexPath) as? FeedCell {
+            let photo = imageListService.photos[indexPath.item]
+            let shouldLike = !photo.likedByUser
+
             cell.showLikeAnimation()
 
-            print("Set like for \(indexPath.item)")
+            imageListService.changeLike(photoId: photo.id, isLike: shouldLike) { result in
+                switch result {
+                case .success:
+                    print("Successfully updated like for \(photo.id)")
+                case let .failure(error):
+                    print("Failed to change like: \(error)")
+                }
+            }
         }
     }
 }
@@ -118,7 +128,14 @@ extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
                 image: UIImage(systemName: "trash"),
                 attributes: .destructive
             ) { [weak self] _ in
-                self?.onDeletePhoto?(indexPath.item)
+                guard let self = self else {return}
+                let photo = self.imageListService.likedPhotos[indexPath.item]
+                
+                self.imageListService.changeLike(photoId: photo.id, isLike: false) { [weak self] result in
+                    if case .success = result {
+                        self?.reloadData()
+                    }
+                }
             }
             return UIMenu(title: "", children: [deleteAction])
         }

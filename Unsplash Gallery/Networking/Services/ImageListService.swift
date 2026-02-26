@@ -107,4 +107,61 @@ final class ImageListService {
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         return request
     }
+    
+    func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void) {
+        assert(Thread.isMainThread)
+        
+        guard let request = makeLikeRequest(photoId: photoId, isLike: isLike) else { return }
+        
+        let task = URLSession.shared.dataTask(with: request) { [weak self] _, response, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    completion(.failure(error))
+                    return
+                }
+                
+                if let response = response as? HTTPURLResponse, !(200...299).contains(response.statusCode) {
+                    completion(.failure(NSError(domain: "LikeError", code: response.statusCode)))
+                    return
+                }
+                
+                self?.updatePhotoLikeStatus(photoId: photoId, isLike: isLike)
+                completion(.success(()))
+            }
+        }
+        task.resume()
+    }
+
+    private func makeLikeRequest(photoId: String, isLike: Bool) -> URLRequest? {
+        let urlString = "https://api.unsplash.com/photos/\(photoId)/like"
+        guard let url = URL(string: urlString) else { return nil }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = isLike ? "POST" : "DELETE"
+        
+        guard let token = OAuth2TokenStorage.shared.token else { return nil }
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        return request
+    }
+
+    private func updatePhotoLikeStatus(photoId: String, isLike: Bool) {
+        if let index = photos.firstIndex(where: { $0.id == photoId }) {
+            let photo = photos[index]
+            let newPhoto = PhotoResult(
+                id: photo.id,
+                createdAt: photo.createdAt,
+                width: photo.width,
+                height: photo.height,
+                description: photo.description,
+                urls: photo.urls,
+                likedByUser: isLike
+            )
+            photos[index] = newPhoto
+        }
+        
+        if !isLike {
+            likedPhotos.removeAll(where: { $0.id == photoId })
+        }
+    }
 }
