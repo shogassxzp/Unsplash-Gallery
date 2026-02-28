@@ -25,7 +25,6 @@ final class FavouriteViewController: UIViewController {
 
     private func setupUI() {
         view.backgroundColor = .backgroundAdaptive
-        collection.mode = .favourites
         collection.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collection)
 

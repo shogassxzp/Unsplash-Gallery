@@ -13,8 +13,12 @@ enum FeedMode {
 }
 
 final class FeedCollection: UICollectionView {
-    var mode: FeedMode = .feed
-    private let imageListService = ImageListService.shared
+    var viewModel: FeedViewModel? {
+        didSet {
+            bindViewModel()
+        }
+    }
+
     private var imageListObserver: NSObjectProtocol?
     private var selectedIndexPath: IndexPath?
     var onPhotoTap: ((Int) -> Void)?
@@ -25,22 +29,16 @@ final class FeedCollection: UICollectionView {
         super.init(frame: .zero, collectionViewLayout: layout)
         setupCollection()
         setupDoubleTap()
-        setupObserver()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupObserver() {
-        imageListObserver = NotificationCenter.default.addObserver(
-            forName: ImageListService.didChangeNotification,
-            object: nil,
-            queue: .main,
-        ) { [weak self] _ in
-            self?.updateCollectionViewAnimated()
+    private func bindViewModel() {
+        viewModel?.onDataUpdated = { [weak self] in
+            self?.reloadData()
         }
-        imageListService.fetchPhotosNextPage()
     }
 
     private func updateCollectionViewAnimated() {
@@ -71,7 +69,8 @@ final class FeedCollection: UICollectionView {
     }
 
     @objc private func handleDoubleTap(_ gesture: UITapGestureRecognizer) {
-        guard mode == .feed, gesture.state == .ended else { return }
+        guard let viewModel = viewModel, viewModel.mode == .feed, gesture.state == .ended else { return }
+        
         let point = gesture.location(in: self)
 
         if let indexPath = indexPathForItem(at: point) {
@@ -80,17 +79,13 @@ final class FeedCollection: UICollectionView {
             feedbackGenerator.impactOccurred()
 
             if let cell = cellForItem(at: indexPath) as? FeedCell {
-                let photo = imageListService.photos[indexPath.item]
-                let shouldLike = !photo.likedByUser
-
                 cell.showLikeAnimation()
-
-                imageListService.changeLike(photoId: photo.id, isLike: shouldLike) { result in
-                    switch result {
-                    case .success:
-                        print("Successfully updated like for \(photo.id)")
-                    case let .failure(error):
-                        print("Failed to change like: \(error)")
+                
+                viewModel.toggleLike(at: indexPath.item) { success in
+                    if success {
+                        print("Successfully updated like via ViewModel")
+                    } else {
+                        print("Failed to change like")
                     }
                 }
             }
@@ -100,21 +95,18 @@ final class FeedCollection: UICollectionView {
 
 extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return mode == .feed ? imageListService.photos.count : imageListService.likedPhotos.count
+        return viewModel?.photosCount ?? 0
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.row + 1 == imageListService.photos.count {
-            imageListService.fetchPhotosNextPage()
+            if indexPath.row + 1 == viewModel?.photosCount {
+                viewModel?.fetchNextPage()
+            }
         }
-    }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FeedCell.reuseIdentifier, for: indexPath) as? FeedCell else {
-            return UICollectionViewCell()
-        }
-        if indexPath.row < imageListService.photos.count {
-            let photo = mode == .feed ? imageListService.photos[indexPath.row] : imageListService.likedPhotos[indexPath.row]
+        let cell = dequeueReusableCell(withReuseIdentifier: FeedCell.reuseIdentifier, for: indexPath) as! FeedCell
+        if let photo = viewModel?.photo(at: indexPath.item) {
             cell.configure(with: photo.urls.small)
         }
         return cell
@@ -125,20 +117,19 @@ extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
-        guard mode == .favourites else { return nil }
+        guard let viewModel = viewModel, viewModel.mode == .favourites else { return nil }
         guard let indexPath = indexPaths.first else { return nil }
+        
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             let deleteAction = UIAction(
                 title: "Delete from favourite",
                 image: UIImage(systemName: "trash"),
                 attributes: .destructive
             ) { [weak self] _ in
-                guard let self = self else { return }
-                let photo = self.imageListService.likedPhotos[indexPath.item]
 
-                self.imageListService.changeLike(photoId: photo.id, isLike: false) { [weak self] result in
-                    if case .success = result {
-                        self?.reloadData()
+                self?.viewModel?.toggleLike(at: indexPath.item) { success in
+                    if success {
+                        print("Photo removed from favourites")
                     }
                 }
             }

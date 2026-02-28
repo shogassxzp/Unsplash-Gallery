@@ -9,16 +9,20 @@ import UIKit
 
 final class MainScreen: UIViewController {
     private let collection = FeedCollection()
+    private let viewModel = FeedViewModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupNavigationBarTitle(text: "Feed", imageName: "house")
+        viewModel.setupObserver()
+        collection.viewModel = viewModel
+        viewModel.fetchNextPage()
+        
         collection.onPhotoTap = { [weak self] index in
             guard let self = self else { return }
-            
-            let detailsViewController = DetailsScreenViewController()
-            detailsViewController.startIndex = index
+            let detailsViewModel = DetailsViewModel(startIndex: index)
+            let detailsViewController = DetailsScreenViewController(viewModel: detailsViewModel)
             detailsViewController.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(detailsViewController, animated: true)
         }
@@ -27,7 +31,6 @@ final class MainScreen: UIViewController {
     private func setupUI() {
         view.addSubview(collection)
         view.backgroundColor = .backgroundAdaptive
-        collection.mode = .feed
         collection.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([

@@ -15,6 +15,7 @@ struct PhotoResult: Decodable {
     let description: String?
     let urls: UrlsResult
     let likedByUser: Bool
+    let user: UserResult
 }
 
 struct UrlsResult: Decodable {
@@ -23,4 +24,11 @@ struct UrlsResult: Decodable {
     let regular: String
     let small: String
     let thumb: String
+}
+
+struct UserResult: Decodable {
+    let id: String
+    let username: String
+    let name: String
+    let portfolioUrl: String?
 }
