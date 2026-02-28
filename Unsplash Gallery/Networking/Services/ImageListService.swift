@@ -4,32 +4,31 @@
 //
 //  Created by Игнат Рогачевич on 25.02.26.
 //
-
+import Combine
 import Foundation
 
 final class ImageListService {
     static let shared = ImageListService()
     private var likedIds: Set<String> = []
-    private init() {
-        self.likedIds = Set(StorageManager.shared.fetchAllLikes())
-    }
 
-    private(set) var photos: [PhotoResult] = []
+    @Published private(set) var photos: [PhotoResult] = []
+    @Published private(set) var likedPhotos: [PhotoResult] = []
+
     private var lastLoadedPage: Int?
-
-    private(set) var likedPhotos: [PhotoResult] = []
     private var lastLoadedPageLiked: Int?
-
     private var task: URLSessionTask?
 
-    static let didChangeNotification = Notification.Name(rawValue: "ImageListServiceDidChange")
+    private init() {
+        likedIds = Set(StorageManager.shared.fetchAllLikes())
+    }
+
+    // MARK: - Public Methods
 
     func fetchPhotosNextPage() {
         assert(Thread.isMainThread)
         if task != nil { return }
 
         let nextPage = (lastLoadedPage ?? 0) + 1
-
         guard let request = makeRequest(page: nextPage) else { return }
 
         let session = URLSession.shared
@@ -39,13 +38,11 @@ final class ImageListService {
             switch result {
             case let .success(photoResults):
                 let syncedPhotos = self.syncWithLikes(photoResults)
-                self.photos.append(contentsOf: photoResults)
-                
+                self.photos.append(contentsOf: syncedPhotos)
                 self.lastLoadedPage = nextPage
-                NotificationCenter.default.post(name: ImageListService.didChangeNotification, object: nil)
 
             case let .failure(error):
-                print(error)
+                print("Ошибка загрузки ленты: \(error)")
             }
             self.task = nil
         }
@@ -78,6 +75,7 @@ final class ImageListService {
             }
             return
         }
+
         let nextPage = (lastLoadedPageLiked ?? 0) + 1
         guard let request = makeLikedRequest(username: username, page: nextPage) else { return }
 
@@ -86,16 +84,42 @@ final class ImageListService {
                 guard let self = self else { return }
                 switch result {
                 case let .success(photoResults):
-                    self.likedPhotos.append(contentsOf: photoResults)
+                    let syncedPhotos = self.syncWithLikes(photoResults)
+                    self.likedPhotos.append(contentsOf: syncedPhotos)
                     self.lastLoadedPageLiked = nextPage
-                    NotificationCenter.default.post(name: ImageListService.didChangeNotification, object: nil)
                 case let .failure(error):
-                    print("Ошибка лайков: \(error)")
+                    print("Ошибка загрузки лайков: \(error)")
                 }
                 self.task = nil
             }
         }
         self.task = task
+        task.resume()
+    }
+
+    func resetLikedPhotos() {
+        likedPhotos = []
+        lastLoadedPageLiked = nil
+    }
+
+    func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void) {
+        assert(Thread.isMainThread)
+        guard let request = makeLikeRequest(photoId: photoId, isLike: isLike) else { return }
+
+        let task = URLSession.shared.dataTask(with: request) { [weak self] _, response, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    completion(.failure(error))
+                    return
+                }
+                if let response = response as? HTTPURLResponse, !(200 ... 299).contains(response.statusCode) {
+                    completion(.failure(NSError(domain: "LikeError", code: response.statusCode)))
+                    return
+                }
+                self?.updatePhotoLikeStatus(photoId: photoId, isLike: isLike)
+                completion(.success(()))
+            }
+        }
         task.resume()
     }
 
@@ -112,45 +136,17 @@ final class ImageListService {
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         return request
     }
-    func resetLikedPhotos() {
-        likedPhotos = []
-        lastLoadedPageLiked = nil
-    }
-    
-    func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void) {
-        assert(Thread.isMainThread)
-        
-        guard let request = makeLikeRequest(photoId: photoId, isLike: isLike) else { return }
-        
-        let task = URLSession.shared.dataTask(with: request) { [weak self] _, response, error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    completion(.failure(error))
-                    return
-                }
-                
-                if let response = response as? HTTPURLResponse, !(200...299).contains(response.statusCode) {
-                    completion(.failure(NSError(domain: "LikeError", code: response.statusCode)))
-                    return
-                }
-                
-                self?.updatePhotoLikeStatus(photoId: photoId, isLike: isLike)
-                completion(.success(()))
-            }
-        }
-        task.resume()
-    }
 
     private func makeLikeRequest(photoId: String, isLike: Bool) -> URLRequest? {
         let urlString = "https://api.unsplash.com/photos/\(photoId)/like"
         guard let url = URL(string: urlString) else { return nil }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = isLike ? "POST" : "DELETE"
-        
+
         guard let token = OAuth2TokenStorage.shared.token else { return nil }
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
+
         return request
     }
 
@@ -177,14 +173,12 @@ final class ImageListService {
             )
             photos[index] = newPhoto
         }
-        
+
         if !isLike {
             likedPhotos.removeAll(where: { $0.id == photoId })
         }
-        
-        NotificationCenter.default.post(name: ImageListService.didChangeNotification, object: nil)
     }
-    
+
     private func syncWithLikes(_ results: [PhotoResult]) -> [PhotoResult] {
         results.map { photo in
             let isLikedLocally = likedIds.contains(photo.id)
