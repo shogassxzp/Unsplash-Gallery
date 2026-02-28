@@ -37,7 +37,7 @@ final class ImageListService {
         let nextPage = (lastLoadedPage ?? 0) + 1
         let queryItems = [
             URLQueryItem(name: "page", value: "\(nextPage)"),
-            URLQueryItem(name: "per_page", value: "10")
+            URLQueryItem(name: "per_page", value: "30")
         ]
 
         guard let request = makeRequest(path: "/photos", queryItems: queryItems) else { return }
@@ -71,7 +71,7 @@ final class ImageListService {
         let nextPage = (lastLoadedPageLiked ?? 0) + 1
         let queryItems = [
             URLQueryItem(name: "page", value: "\(nextPage)"),
-            URLQueryItem(name: "per_page", value: "10")
+            URLQueryItem(name: "per_page", value: "30")
         ]
 
         guard let request = makeRequest(path: "/users/\(username)/likes", queryItems: queryItems) else { return }
