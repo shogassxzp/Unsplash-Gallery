@@ -113,7 +113,7 @@ final class DetailsScreenViewController: UIViewController {
             detailsImageView.topAnchor.constraint(equalTo: view.topAnchor),
             detailsImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             detailsImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            detailsImageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.7),
+            detailsImageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.8),
 
             likeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             likeButton.topAnchor.constraint(equalTo: detailsImageView.bottomAnchor, constant: 16),
@@ -145,11 +145,10 @@ final class DetailsScreenViewController: UIViewController {
             }
             .store(in: &cancellables)
 
-        viewModel.$currentIndex
-            .dropFirst()
+        viewModel.transitionDirection
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.animateTransition(isNext: true)
+            .sink { [weak self] isNext in
+                self?.animateTransition(isNext: isNext)
             }
             .store(in: &cancellables)
     }
@@ -176,32 +175,28 @@ final class DetailsScreenViewController: UIViewController {
         let tempImageView = UIImageView(frame: detailsImageView.frame)
         tempImageView.contentMode = detailsImageView.contentMode
         tempImageView.image = detailsImageView.image
-        tempImageView.clipsToBounds = detailsImageView.clipsToBounds
+        tempImageView.clipsToBounds = true
         tempImageView.layer.cornerRadius = detailsImageView.layer.cornerRadius
         tempImageView.layer.maskedCorners = detailsImageView.layer.maskedCorners
         view.addSubview(tempImageView)
 
+        let width = view.bounds.width
+        let departureTranslation = isNext ? -width : width
+        let arrivalTranslation = isNext ? width : -width
 
-        let translationX = isNext ? view.bounds.width : -view.bounds.width
+        detailsImageView.transform = CGAffineTransform(translationX: arrivalTranslation, y: 0)
 
-        detailsImageView.transform = CGAffineTransform(translationX: translationX, y: 0)
+        [descriptionLabel, publishedLabel, authorNameLabel].forEach { $0.alpha = 0 }
 
-        UIView.animate(withDuration: 0.4, delay: .zero, options: .curveEaseInOut, animations: {
-            tempImageView.transform = CGAffineTransform(translationX: -translationX, y: 0)
+        UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut, animations: {
+            tempImageView.transform = CGAffineTransform(translationX: departureTranslation, y: 0)
             tempImageView.alpha = 0
-
             self.detailsImageView.transform = .identity
-            self.descriptionLabel.alpha = 0
-            self.publishedLabel.alpha = 0
-            self.authorNameLabel.alpha = 0
-
         }) { _ in
-            UIView.animate(withDuration: 0.2) {
-                self.descriptionLabel.alpha = 1.0
-                self.publishedLabel.alpha = 1.0
-                self.authorNameLabel.alpha = 1.0
-            }
             tempImageView.removeFromSuperview()
+            UIView.animate(withDuration: 0.2) {
+                [self.descriptionLabel, self.publishedLabel, self.authorNameLabel].forEach { $0.alpha = 1 }
+            }
         }
     }
 

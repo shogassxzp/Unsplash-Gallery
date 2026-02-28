@@ -69,7 +69,7 @@ final class FeedCollection: UICollectionView {
 
     @objc private func handleDoubleTap(_ gesture: UITapGestureRecognizer) {
         guard let viewModel = viewModel, viewModel.mode == .feed, gesture.state == .ended else { return }
-        
+
         let point = gesture.location(in: self)
 
         if let indexPath = indexPathForItem(at: point) {
@@ -79,7 +79,7 @@ final class FeedCollection: UICollectionView {
 
             if let cell = cellForItem(at: indexPath) as? FeedCell {
                 cell.showLikeAnimation()
-                
+
                 viewModel.toggleLike(at: indexPath.item) { success in
                     if success {
                         print("Successfully updated like via ViewModel")
@@ -98,10 +98,10 @@ extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-            if indexPath.row + 1 == viewModel?.photosCount {
-                viewModel?.fetchNextPage()
-            }
+        if indexPath.row + 1 == viewModel?.photosCount {
+            viewModel?.fetchNextPage()
         }
+    }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = dequeueReusableCell(withReuseIdentifier: FeedCell.reuseIdentifier, for: indexPath) as! FeedCell
@@ -118,7 +118,7 @@ extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let viewModel = viewModel, viewModel.mode == .favourites else { return nil }
         guard let indexPath = indexPaths.first else { return nil }
-        
+
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             let deleteAction = UIAction(
                 title: "Delete from favourite",

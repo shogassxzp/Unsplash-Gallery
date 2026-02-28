@@ -21,7 +21,7 @@ final class MainScreen: UIViewController {
         
         collection.onPhotoTap = { [weak self] index in
             guard let self = self else { return }
-            let detailsViewModel = DetailsViewModel(startIndex: index)
+            let detailsViewModel = DetailsViewModel(startIndex: index,mode: .feed)
             let detailsViewController = DetailsScreenViewController(viewModel: detailsViewModel)
             detailsViewController.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(detailsViewController, animated: true)

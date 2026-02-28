@@ -11,6 +11,8 @@ import Combine
 final class DetailsViewModel {
     private let imageListService = ImageListService.shared
     private var cancellables = Set<AnyCancellable>()
+    private let mode: FeedMode
+    let transitionDirection = PassthroughSubject<Bool, Never>()
     
     // MARK: - Published Properties
     @Published private(set) var currentPhoto: PhotoResult?
@@ -24,38 +26,45 @@ final class DetailsViewModel {
         currentPhoto?.createdAt?.toReadableDate() ?? "Date unknown"
     }
 
-    init(startIndex: Int) {
+    init(startIndex: Int, mode: FeedMode) {
         self.currentIndex = startIndex
+        self.mode = mode
         setupBindings()
     }
     
     // MARK: - Bindings
     private func setupBindings() {
-        Publishers.CombineLatest(imageListService.$photos, $currentIndex)
-            .map { photos, index in
-                guard index >= 0, index < photos.count else { return nil }
-                return photos[index]
-            }
-            .assign(to: \.currentPhoto, on: self)
-            .store(in: &cancellables)
-    }
+            let sourcePublisher = (mode == .feed)
+                ? imageListService.$photos
+                : imageListService.$likedPhotos
+            
+            Publishers.CombineLatest(sourcePublisher, $currentIndex)
+                .map { photos, index in
+                    guard index >= 0, index < photos.count else { return nil }
+                    return photos[index]
+                }
+                .assign(to: \.currentPhoto, on: self)
+                .store(in: &cancellables)
+        }
     
     // MARK: - Actions
     func nextPhoto() {
-        let photosCount = imageListService.photos.count
-        
-        if currentIndex >= photosCount - 2 {
-            imageListService.fetchPhotosNextPage()
+            let currentArray = (mode == .feed) ? imageListService.photos : imageListService.likedPhotos
+            
+            if currentIndex >= currentArray.count - 2 {
+                mode == .feed ? imageListService.fetchPhotosNextPage() : imageListService.fethcLikedPhotosNextPage()
+            }
+            
+            if currentIndex < currentArray.count - 1 {
+                currentIndex += 1
+                transitionDirection.send(true)
+            }
         }
-        
-        if currentIndex < photosCount - 1 {
-            currentIndex += 1
-        }
-    }
     
     func prevPhoto() {
         if currentIndex > 0 {
             currentIndex -= 1
+            transitionDirection.send(false)
         }
     }
     
