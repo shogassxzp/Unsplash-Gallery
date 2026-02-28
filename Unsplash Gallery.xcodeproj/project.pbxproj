@@ -31,6 +31,8 @@
 		1FBFA1F72F52E25500616A3C /* DetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FBFA1F62F52E25500616A3C /* DetailsViewModel.swift */; };
 		1FBFA1FA2F52E80B00616A3C /* ImageListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FBFA1F92F52E80B00616A3C /* ImageListViewModel.swift */; };
 		1FBFA1FE2F52ECEB00616A3C /* FeedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FBFA1FD2F52ECEB00616A3C /* FeedViewModel.swift */; };
+		1FBFA2082F52F77800616A3C /* FavouritesModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1FBFA2062F52F77800616A3C /* FavouritesModel.xcdatamodeld */; };
+		1FBFA20A2F52F79500616A3C /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FBFA2092F52F79500616A3C /* StorageManager.swift */; };
 		1FD924552F4A052E006A7A6A /* WatefallLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD924542F4A052E006A7A6A /* WatefallLayout.swift */; };
 		1FED34AB2F49A79F005062F8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1FED34A42F49A79F005062F8 /* Assets.xcassets */; };
 		1FED34AD2F49A79F005062F8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1FED34A72F49A79F005062F8 /* LaunchScreen.storyboard */; };
@@ -69,6 +71,8 @@
 		1FBFA1F62F52E25500616A3C /* DetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsViewModel.swift; sourceTree = "<group>"; };
 		1FBFA1F92F52E80B00616A3C /* ImageListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageListViewModel.swift; sourceTree = "<group>"; };
 		1FBFA1FD2F52ECEB00616A3C /* FeedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewModel.swift; sourceTree = "<group>"; };
+		1FBFA2072F52F77800616A3C /* FavouritesModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FavouritesModel.xcdatamodel; sourceTree = "<group>"; };
+		1FBFA2092F52F79500616A3C /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		1FD924542F4A052E006A7A6A /* WatefallLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatefallLayout.swift; sourceTree = "<group>"; };
 		1FED34A32F49A79F005062F8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1FED34A42F49A79F005062F8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -234,6 +238,15 @@
 			path = FavouriteScreen;
 			sourceTree = "<group>";
 		};
+		1FBFA2032F52F74E00616A3C /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				1FBFA2062F52F77800616A3C /* FavouritesModel.xcdatamodeld */,
+				1FBFA2092F52F79500616A3C /* StorageManager.swift */,
+			);
+			path = CoreData;
+			sourceTree = "<group>";
+		};
 		1FED34A22F49A79F005062F8 /* UI */ = {
 			isa = PBXGroup;
 			children = (
@@ -250,6 +263,7 @@
 		1FED34AA2F49A79F005062F8 /* Unsplash Gallery */ = {
 			isa = PBXGroup;
 			children = (
+				1FBFA2032F52F74E00616A3C /* CoreData */,
 				1FED34BA2F49A88B005062F8 /* FeedCollection */,
 				1FED34A22F49A79F005062F8 /* UI */,
 				1FED34A32F49A79F005062F8 /* AppDelegate.swift */,
@@ -386,10 +400,12 @@
 				1F738D852F4EF3680003BC35 /* OAuth2TokenStorage.swift in Sources */,
 				1F738D712F4EEC650003BC35 /* PhotoResult.swift in Sources */,
 				1F738DDF2F4EF7850003BC35 /* URLSession+data.swift in Sources */,
+				1FBFA2082F52F77800616A3C /* FavouritesModel.xcdatamodeld in Sources */,
 				1F738DDD2F4EF6D50003BC35 /* HTTPMethod.swift in Sources */,
 				1F913E2C2F50700400C04C25 /* DateFormatter + Extensions.swift in Sources */,
 				1FED34B82F49A7CD005062F8 /* TabBar.swift in Sources */,
 				1FED34BC2F49A8A0005062F8 /* FeedCollection.swift in Sources */,
+				1FBFA20A2F52F79500616A3C /* StorageManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -671,6 +687,19 @@
 			productName = SwiftKeychainWrapper;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		1FBFA2062F52F77800616A3C /* FavouritesModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				1FBFA2072F52F77800616A3C /* FavouritesModel.xcdatamodel */,
+			);
+			currentVersion = 1FBFA2072F52F77800616A3C /* FavouritesModel.xcdatamodel */;
+			path = FavouritesModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 1F725DA72F49A703007DF68D /* Project object */;
 }
