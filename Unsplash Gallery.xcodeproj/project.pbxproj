@@ -226,15 +226,23 @@
 			path = FeedScreen;
 			sourceTree = "<group>";
 		};
+		1FBFA1FF2F52F0F000616A3C /* FavouriteScreen */ = {
+			isa = PBXGroup;
+			children = (
+				1FED34B32F49A7B9005062F8 /* FavoriteScreen.swift */,
+			);
+			path = FavouriteScreen;
+			sourceTree = "<group>";
+		};
 		1FED34A22F49A79F005062F8 /* UI */ = {
 			isa = PBXGroup;
 			children = (
 				1FBFA1F82F52E7D500616A3C /* FeedScreen */,
 				1F5386C12F4B2B7400A1D08F /* UIViewContrller + Extension.swift */,
-				1FED34B32F49A7B9005062F8 /* FavoriteScreen.swift */,
 				1FED34B72F49A7CD005062F8 /* TabBar.swift */,
 				1F738DD42F4EF5260003BC35 /* UIBlockingProgressHUD.swift */,
 				1FBFA1F52F52E23900616A3C /* DetailsScreen */,
+				1FBFA1FF2F52F0F000616A3C /* FavouriteScreen */,
 			);
 			path = UI;
 			sourceTree = "<group>";
