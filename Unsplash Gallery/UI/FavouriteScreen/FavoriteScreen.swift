@@ -11,25 +11,19 @@ final class FavouriteViewController: UIViewController {
     private let collection = FeedCollection()
     private let viewModel = FeedViewModel()
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        ImageListService.shared.resetLikedPhotos()
-        collection.reloadData()
-        ImageListService.shared.fethcLikedPhotosNextPage()
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupNavigationBarTitle(text: "Favourite", imageName: "heart")
         viewModel.mode = .favourites
         viewModel.setupObserver()
+        ImageListService.shared.fethcLikedPhotosNextPage()
 
         collection.viewModel = viewModel
 
         collection.onPhotoTap = { [weak self] index in
             guard let self = self else { return }
-            let detailsViewModel = DetailsViewModel(startIndex: index)
+            let detailsViewModel = DetailsViewModel(startIndex: index, mode: .favourites)
             let detailsViewController = DetailsScreenViewController(viewModel: detailsViewModel)
             self.navigationController?.pushViewController(detailsViewController, animated: true)
         }
