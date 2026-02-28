@@ -4,56 +4,60 @@
 //
 //  Created by Игнат Рогачевич on 28.02.26.
 //
-typealias Photo = PhotoResult
+
 import Foundation
+import Combine
 
 final class ImageListViewModel {
     // MARK: - Properties
-
     private let imageListService = ImageListService.shared
-    private var photos: [Photo] = []
+    private var cancellables = Set<AnyCancellable>()
+    
     var mode: FeedMode = .feed
-
     var onChange: (() -> Void)?
-    var onError: (() -> Void)?
-
+    
     // MARK: - Public Data
-
+    
+    private var currentSource: [PhotoResult] {
+        mode == .feed ? imageListService.photos : imageListService.likedPhotos
+    }
+    
     var photosCount: Int {
-        photos.count
+        currentSource.count
     }
-
-    func photo(at index: Int) -> Photo? {
-        guard index < photos.count else { return nil }
-        return photos[index]
+    
+    func photo(at index: Int) -> PhotoResult? {
+        guard index >= 0, index < currentSource.count else { return nil }
+        return currentSource[index]
     }
-
+    
     // MARK: - Actions
-
-    func fetchPhotos() {
-        imageListService.fethcLikedPhotosNextPage()
-    }
     
-    func setupObserver() {
-            NotificationCenter.default.addObserver(
-                forName: ImageListService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                self?.updatePhotos()
-            }
+    func fetchNextPage() {
+        if mode == .feed {
+            imageListService.fetchPhotosNextPage()
+        } else {
+            imageListService.fethcLikedPhotosNextPage()
         }
-    
-    private func updatePhotos() {
-        let oldCount = photos.count
-        let newPhotos = imageListService.photos
-        self.photos = newPhotos
-        
-        onChange?()
     }
     
     func toggleLike(at index: Int) {
-        let photo = photos[index]
-        imageListService.changeLike(photoId: photo.id, isLike: !photo.likedByUser) {_ in }
+        guard let photo = photo(at: index) else { return }
+        imageListService.changeLike(photoId: photo.id, isLike: !photo.likedByUser) { _ in }
+    }
+    
+    // MARK: - Combine Setup
+    
+    func setupObserver() {
+        let publisher = (mode == .feed)
+            ? imageListService.$photos
+            : imageListService.$likedPhotos
+        
+        publisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.onChange?()
+            }
+            .store(in: &cancellables)
     }
 }
