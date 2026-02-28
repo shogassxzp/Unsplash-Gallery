@@ -19,7 +19,6 @@ final class FeedCollection: UICollectionView {
         }
     }
 
-    private var imageListObserver: NSObjectProtocol?
     private var selectedIndexPath: IndexPath?
     var onPhotoTap: ((Int) -> Void)?
     var onDeletePhoto: ((Int) -> Void)?
