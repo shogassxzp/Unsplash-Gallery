@@ -37,8 +37,15 @@ final class FeedCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        collectionImageView.kf.cancelDownloadTask()
-        collectionImageView.image = nil
+        
+        contentView.layer.removeAllAnimations()
+        likeHeartView.layer.removeAllAnimations()
+        
+        likeHeartView.transform = .identity
+        likeHeartView.alpha = 0
+        
+        likeHeartView.kf.cancelDownloadTask()
+        likeHeartView.image = nil
     }
 
     private func setupCell() {
