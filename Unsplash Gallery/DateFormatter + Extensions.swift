@@ -16,6 +16,7 @@ extension String {
                 formatter.dateStyle = .long
                 formatter.timeStyle = .none
                 formatter.locale = Locale(identifier: "en_US")
+                formatter.timeZone = TimeZone(abbreviation: "UTC")
                 return formatter
             }()
         }
