@@ -8,7 +8,8 @@
 import UIKit
 
 final class FavouriteViewController: UIViewController {
-    private var collection = FeedCollection()
+    private let collection = FeedCollection()
+    private let viewModel = FeedViewModel()
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -16,16 +17,26 @@ final class FavouriteViewController: UIViewController {
         collection.reloadData()
         ImageListService.shared.fethcLikedPhotosNextPage()
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupNavigationBarTitle(text: "Favourite", imageName: "heart")
+        viewModel.mode = .favourites
+        viewModel.setupObserver()
+
+        collection.viewModel = viewModel
+
+        collection.onPhotoTap = { [weak self] index in
+            guard let self = self else { return }
+            let detailsViewModel = DetailsViewModel(startIndex: index)
+            let detailsViewController = DetailsScreenViewController(viewModel: detailsViewModel)
+            self.navigationController?.pushViewController(detailsViewController, animated: true)
+        }
     }
 
     private func setupUI() {
         view.backgroundColor = .backgroundAdaptive
-        collection.mode = .favourites
         collection.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collection)
 

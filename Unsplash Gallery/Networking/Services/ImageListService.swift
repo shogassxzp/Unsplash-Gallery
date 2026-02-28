@@ -159,7 +159,8 @@ final class ImageListService {
                 height: photo.height,
                 description: photo.description,
                 urls: photo.urls,
-                likedByUser: isLike
+                likedByUser: isLike,
+                user: photo.user
             )
             photos[index] = newPhoto
         }
