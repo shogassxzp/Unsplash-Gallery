@@ -9,7 +9,10 @@ import Foundation
 
 final class ImageListService {
     static let shared = ImageListService()
-    private init() {}
+    private var likedIds: Set<String> = []
+    private init() {
+        self.likedIds = Set(StorageManager.shared.fetchAllLikes())
+    }
 
     private(set) var photos: [PhotoResult] = []
     private var lastLoadedPage: Int?
@@ -35,7 +38,9 @@ final class ImageListService {
 
             switch result {
             case let .success(photoResults):
+                let syncedPhotos = self.syncWithLikes(photoResults)
                 self.photos.append(contentsOf: photoResults)
+                
                 self.lastLoadedPage = nextPage
                 NotificationCenter.default.post(name: ImageListService.didChangeNotification, object: nil)
 
@@ -150,6 +155,14 @@ final class ImageListService {
     }
 
     private func updatePhotoLikeStatus(photoId: String, isLike: Bool) {
+        if isLike {
+            likedIds.insert(photoId)
+            StorageManager.shared.saveLike(id: photoId)
+        } else {
+            likedIds.remove(photoId)
+            StorageManager.shared.removeLike(id: photoId)
+        }
+
         if let index = photos.firstIndex(where: { $0.id == photoId }) {
             let photo = photos[index]
             let newPhoto = PhotoResult(
@@ -167,6 +180,24 @@ final class ImageListService {
         
         if !isLike {
             likedPhotos.removeAll(where: { $0.id == photoId })
+        }
+        
+        NotificationCenter.default.post(name: ImageListService.didChangeNotification, object: nil)
+    }
+    
+    private func syncWithLikes(_ results: [PhotoResult]) -> [PhotoResult] {
+        results.map { photo in
+            let isLikedLocally = likedIds.contains(photo.id)
+            return PhotoResult(
+                id: photo.id,
+                createdAt: photo.createdAt,
+                width: photo.width,
+                height: photo.height,
+                description: photo.description,
+                urls: photo.urls,
+                likedByUser: isLikedLocally,
+                user: photo.user
+            )
         }
     }
 }
