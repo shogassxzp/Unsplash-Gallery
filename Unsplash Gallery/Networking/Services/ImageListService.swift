@@ -15,18 +15,22 @@ final class ImageListService {
     @Published private(set) var photos: [PhotoResult] = []
     @Published private(set) var likedPhotos: [PhotoResult] = []
     
-    // MARK: - Private Properties
-    private var likedIds: Set<String> = []
-    private var lastLoadedPage: Int?
-    private var lastLoadedPageLiked: Int?
-    private var task: URLSessionTask?
-    
-    private let urlSession = URLSession.shared
-    private let baseURL = "https://api.unsplash.com"
+    // MARK: - Dependencies (Injectable)
+        var urlSession = URLSession.shared
+        var tokenStorage = OAuth2TokenStorage.shared
+        var storageManager = StorageManager.shared
+        
+        // MARK: - Private Properties
+        private var likedIds: Set<String> = []
+        private var lastLoadedPage: Int?
+        private var lastLoadedPageLiked: Int?
+        private var task: URLSessionTask?
+        
+        private let baseURL = "https://api.unsplash.com"
 
-    private init() {
-        self.likedIds = Set(StorageManager.shared.fetchAllLikes())
-    }
+        private init() {
+            self.likedIds = Set(storageManager.fetchAllLikes())
+        }
 
     // MARK: - Public Methods
 
@@ -137,7 +141,7 @@ final class ImageListService {
         var request = URLRequest(url: url)
         request.httpMethod = httpMethod
         
-        guard let token = OAuth2TokenStorage.shared.token else { return nil }
+        guard let token = tokenStorage.token else { return nil }
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
         return request
@@ -146,10 +150,10 @@ final class ImageListService {
     private func updatePhotoLikeStatus(photoId: String, isLike: Bool) {
         if isLike {
             likedIds.insert(photoId)
-            StorageManager.shared.saveLike(id: photoId)
+            storageManager.saveLike(id: photoId)
         } else {
             likedIds.remove(photoId)
-            StorageManager.shared.removeLike(id: photoId)
+            storageManager.removeLike(id: photoId)
         }
 
         if let index = photos.firstIndex(where: { $0.id == photoId }) {
