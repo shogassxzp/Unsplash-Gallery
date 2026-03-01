@@ -104,7 +104,7 @@ extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = dequeueReusableCell(withReuseIdentifier: FeedCell.reuseIdentifier, for: indexPath) as! FeedCell
+        guard let cell = dequeueReusableCell(withReuseIdentifier: FeedCell.reuseIdentifier, for: indexPath) as? FeedCell else { return UICollectionViewCell() }
         if let photo = viewModel?.photo(at: indexPath.item) {
             cell.configure(with: photo.urls.small, isLiked: photo.likedByUser)
         }

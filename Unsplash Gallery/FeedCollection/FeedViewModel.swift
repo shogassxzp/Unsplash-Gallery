@@ -29,7 +29,7 @@ final class FeedViewModel {
         if mode == .feed {
             imageListService.fetchPhotosNextPage()
         } else {
-            imageListService.fethcLikedPhotosNextPage()
+            imageListService.fetchLikedPhotosNextPage()
         }
     }
 

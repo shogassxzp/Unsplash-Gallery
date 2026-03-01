@@ -19,7 +19,7 @@ final class FeedCell: UICollectionViewCell {
         likeView.translatesAutoresizingMaskIntoConstraints = false
         return likeView
     }()
-    
+
     private let likeIndicator: UIImageView = {
         let indicator = UIImageView()
         indicator.image = UIImage(systemName: "heart.fill")
@@ -28,50 +28,50 @@ final class FeedCell: UICollectionViewCell {
         indicator.alpha = 0
         return indicator
     }()
-    
+
     private var imageId: String?
     var collectionImageView = UIImageView()
     var shadowView = UIView()
-    
+
     static let reuseIdentifier = "FeedCell"
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupCell()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
-        
+
         contentView.layer.removeAllAnimations()
         likeHeartView.layer.removeAllAnimations()
-        
+
         likeHeartView.transform = .identity
         likeHeartView.alpha = 0
         likeIndicator.alpha = 0
-        
+
         likeHeartView.kf.cancelDownloadTask()
         likeHeartView.image = nil
     }
-    
+
     private func setupCell() {
-        [shadowView, collectionImageView, likeHeartView,likeIndicator].forEach {
+        [shadowView, collectionImageView, likeHeartView, likeIndicator].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview($0)
         }
         contentView.backgroundColor = .backgroundAdaptive
-        
+
         shadowView.backgroundColor = .backgroundAdaptive
         shadowView.layer.shadowColor = UIColor.blackAdaptive.cgColor
         shadowView.layer.shadowOpacity = 0.4
         shadowView.layer.shadowOffset = CGSize(width: 0, height: 4)
         shadowView.layer.shadowRadius = 6
         shadowView.layer.cornerRadius = 16
-        
+
         collectionImageView.image = UIImage(resource: .mock)
         collectionImageView.contentMode = .scaleAspectFill
         collectionImageView.clipsToBounds = true
@@ -79,34 +79,34 @@ final class FeedCell: UICollectionViewCell {
         collectionImageView.layer.cornerRadius = 16
         collectionImageView.backgroundColor = .blackAdaptive
         collectionImageView.tintColor = .backgroundAdaptive
-        
+
         NSLayoutConstraint.activate([
             shadowView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
             shadowView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
             shadowView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
             shadowView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
-            
+
             collectionImageView.leadingAnchor.constraint(equalTo: shadowView.leadingAnchor),
             collectionImageView.trailingAnchor.constraint(equalTo: shadowView.trailingAnchor),
             collectionImageView.topAnchor.constraint(equalTo: shadowView.topAnchor),
             collectionImageView.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor),
-            
+
             likeIndicator.topAnchor.constraint(equalTo: collectionImageView.topAnchor, constant: 8),
             likeIndicator.trailingAnchor.constraint(equalTo: collectionImageView.trailingAnchor, constant: -8),
             likeIndicator.heightAnchor.constraint(equalToConstant: 24),
             likeIndicator.widthAnchor.constraint(equalToConstant: 24),
-            
+
             likeHeartView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             likeHeartView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             likeHeartView.widthAnchor.constraint(equalToConstant: 80),
-            likeHeartView.heightAnchor.constraint(equalToConstant: 80),
+            likeHeartView.heightAnchor.constraint(equalToConstant: 80)
         ])
     }
-    
+
     func showLikeAnimation() {
         likeHeartView.alpha = 0
         likeHeartView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-        
+
         UIView.animate(
             withDuration: 0.5,
             delay: 0,
@@ -138,7 +138,7 @@ extension FeedCell {
             placeholder: UIImage(resource: .imagePlaceholder),
             options: [
                 .transition(.fade(0.25)),
-                .cacheSerializer(FormatIndicatedCacheSerializer.jpeg),
+                .cacheSerializer(FormatIndicatedCacheSerializer.jpeg)
             ]
         )
         likeIndicator.alpha = isLiked ? 1 : 0
