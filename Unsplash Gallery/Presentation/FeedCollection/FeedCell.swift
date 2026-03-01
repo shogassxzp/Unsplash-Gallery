@@ -54,8 +54,8 @@ final class FeedCell: UICollectionViewCell {
         likeHeartView.alpha = 0
         likeIndicator.alpha = 0
 
-        likeHeartView.kf.cancelDownloadTask()
-        likeHeartView.image = nil
+        collectionImageView.kf.cancelDownloadTask()
+        collectionImageView.image = nil
     }
 
     private func setupCell() {

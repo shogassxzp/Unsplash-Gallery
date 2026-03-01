@@ -115,7 +115,7 @@ final class DetailsScreenViewController: UIViewController {
             detailsImageView.topAnchor.constraint(equalTo: view.topAnchor),
             detailsImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             detailsImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            detailsImageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.8),
+            detailsImageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.7),
 
             likeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             likeButton.topAnchor.constraint(equalTo: detailsImageView.bottomAnchor, constant: 16),
