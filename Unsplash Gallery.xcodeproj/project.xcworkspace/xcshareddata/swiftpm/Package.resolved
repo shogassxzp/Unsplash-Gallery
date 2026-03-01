@@ -1,5 +1,5 @@
 {
-  "originHash" : "a08a29b14befee6d26db9de4438877bd4c5f8b489a14da539a04cd77d7bf99a3",
+  "originHash" : "67ddef27ab59eebe6951788d4458c79ce2e24c323faa0aa4ce7cea1ffb097f5e",
   "pins" : [
     {
       "identity" : "kingfisher",
@@ -8,15 +8,6 @@
       "state" : {
         "revision" : "e227df15448d2ad1a5d4e4c49722a71c68f9058a",
         "version" : "8.7.0"
-      }
-    },
-    {
-      "identity" : "progresshud",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/relatedcode/ProgressHUD.git",
-      "state" : {
-        "revision" : "44e04c79ae75ed5e979df517ab13d8a1aa9b41a5",
-        "version" : "15.0.1"
       }
     },
     {
