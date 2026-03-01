@@ -4,6 +4,7 @@ final class SplashScreenViewController: UIViewController, AuthViewControllerDele
     private var logoImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(resource: .unsplashLogo)
+        imageView.tintColor = .blackAdaptive
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -22,7 +23,7 @@ final class SplashScreenViewController: UIViewController, AuthViewControllerDele
     }
 
     private func setupView() {
-        view.backgroundColor = .blackUniversal
+        view.backgroundColor = .whiteAdaptive
         view.addSubview(logoImageView)
 
         NSLayoutConstraint.activate([
@@ -53,8 +54,7 @@ final class SplashScreenViewController: UIViewController, AuthViewControllerDele
         ProfileService.shared.fetchProfile { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
-                case let .success(username):
-                    print("Profile loaded: \(username)")
+                case .success:
                     self?.switchToTabBarController()
                 case let .failure(error):
                     print("Profile error: \(error)")

@@ -17,8 +17,9 @@ final class AuthViewController: UIViewController, WebViewViewControllerDelegate 
     }
 
     private func setupView() {
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .whiteAdaptive
         logoImageView.image = UIImage(resource: .unsplashLogo)
+        logoImageView.tintColor = .blackAdaptive
         loginButton.setTitle("Login", for: .normal)
         loginButton.titleLabel?.font = .boldSystemFont(ofSize: 17)
         loginButton.backgroundColor = .blackAdaptive

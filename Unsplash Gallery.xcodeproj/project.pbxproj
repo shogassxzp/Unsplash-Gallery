@@ -258,6 +258,7 @@
 				1FBFA1FF2F52F0F000616A3C /* FavouriteScreen */,
 				1F738E262F4EFD3B0003BC35 /* SplashScreen */,
 				1F738D7F2F4EF3320003BC35 /* Auth */,
+				1FED34BA2F49A88B005062F8 /* FeedCollection */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -268,7 +269,6 @@
 				1FFF11312F54459E00285039 /* Resources */,
 				1FFF112F2F54450600285039 /* Helperes */,
 				1FFF112D2F54437400285039 /* App */,
-				1FED34BA2F49A88B005062F8 /* FeedCollection */,
 				1FED34A22F49A79F005062F8 /* Presentation */,
 				1F738E282F4F07370003BC35 /* Services */,
 			);
