@@ -37,9 +37,11 @@
 
 ## 📱 Screenshots
 
-| Gallery Screen | Detail View | Favourites |
+В приложении реализован интуитивно понятный интерфейс, адаптированный под светлую и темную темы оформления iOS 17/18.
+
+| **Лента (Gallery)** | **Детали (Detail)** | **Избранное (Favorites)** |
 | :---: | :---: | :---: |
-| ![Gallery](https://via.placeholder.com/200x400?text=Gallery+Screen) | ![Detail](https://via.placeholder.com/200x400?text=Detail+Screen) | ![Favs](https://via.placeholder.com/200x400?text=Favourites) |
+| <img src="./Screenshots/feed.png" width="250" > | <img src="./Screenshots/details.png" width="250" alt="Экран деталей с кастомной кнопкой назад"> | <img src="./Screenshots/favourite.png" width="250" alt="Экран избранных фотографий (CoreData)"> |
 
 ---
 
