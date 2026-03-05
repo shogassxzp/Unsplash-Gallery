@@ -9,7 +9,6 @@ import Combine
 import Foundation
 
 final class ImageListService {
-    static let shared = ImageListService()
     
     // MARK: - Publishers
     @Published private(set) var photos: [PhotoResult] = []
