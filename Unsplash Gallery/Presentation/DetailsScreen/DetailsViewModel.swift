@@ -28,7 +28,7 @@ final class DetailsViewModel {
         currentPhoto?.createdAt?.toReadableDate() ?? "Date unknown"
     }
 
-    init(startIndex: Int, mode: FeedMode,imageListService: ImageListService) {
+    init(startIndex: Int, mode: FeedMode, imageListService: ImageListService) {
         currentIndex = startIndex
         self.imageListService = imageListService
         self.mode = mode

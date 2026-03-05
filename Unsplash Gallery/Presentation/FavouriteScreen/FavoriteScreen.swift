@@ -12,6 +12,25 @@ final class FavouriteViewController: UIViewController {
     private let viewModel: FeedViewModel
     private let imageListService: ImageListService
 
+    private lazy var emptyStateStack: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 12
+        stack.alignment = .center
+        stack.isHidden = true
+
+        let imageView = UIImageView(image: UIImage(resource: .favEmpty))
+
+        let label = UILabel()
+        label.text = "You haven't liked any photos yet"
+        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.textColor = .blackAdaptive
+
+        stack.addArrangedSubview(imageView)
+        stack.addArrangedSubview(label)
+        return stack
+    }()
+
     init(viewModel: FeedViewModel, imageListService: ImageListService) {
         self.viewModel = viewModel
         self.imageListService = imageListService
@@ -26,18 +45,27 @@ final class FavouriteViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupNavigationBarTitle(text: "Favourite", imageName: "heart")
+
         viewModel.mode = .favourites
-        viewModel.setupObserver()
-        imageListService.fetchLikedPhotosNextPage()
 
         collection.viewModel = viewModel
+        imageListService.fetchLikedPhotosNextPage()
 
+        viewModel.onDataUpdated = { [weak self] in
+            self?.updateEmptyState()
+            self?.collection.reloadData()
+        }
+
+        viewModel.setupObserver()
+        setupEmptyStateLayout()
+        
         collection.onPhotoTap = { [weak self] index in
             guard let self = self else { return }
             let detailsViewModel = DetailsViewModel(startIndex: index, mode: .favourites, imageListService: imageListService)
             let detailsViewController = DetailsScreenViewController(viewModel: detailsViewModel)
             self.navigationController?.pushViewController(detailsViewController, animated: true)
         }
+        updateEmptyState()
     }
 
     private func setupUI() {
@@ -49,7 +77,23 @@ final class FavouriteViewController: UIViewController {
             collection.topAnchor.constraint(equalTo: view.topAnchor),
             collection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collection.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            collection.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            collection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
+    }
+
+    private func setupEmptyStateLayout() {
+        view.addSubview(emptyStateStack)
+        emptyStateStack.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            emptyStateStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyStateStack.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        ])
+    }
+
+    private func updateEmptyState() {
+        let isEmpty = viewModel.photosCount == 0
+        emptyStateStack.isHidden = !isEmpty
+        collection.isHidden = isEmpty
     }
 }

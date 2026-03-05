@@ -12,7 +12,7 @@ final class FeedViewController: UIViewController {
     private let viewModel: FeedViewModel
     private let imageListService: ImageListService
     
-    init(viewModel: FeedViewModel,imageListService: ImageListService) {
+    init(viewModel: FeedViewModel, imageListService: ImageListService) {
         self.viewModel = viewModel
         self.imageListService = imageListService
         super.init(nibName: nil, bundle: nil)

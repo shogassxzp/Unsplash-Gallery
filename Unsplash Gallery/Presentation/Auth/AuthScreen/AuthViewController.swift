@@ -9,20 +9,19 @@ final class AuthViewController: UIViewController, WebViewViewControllerDelegate 
     private let loginButton = UIButton(type: .system)
     private let oauth2Service: OAuth2Service
     private let tokenStorage: OAuth2TokenStorage
-    
+
     weak var delegate: AuthViewControllerDelegate?
-    
+
     init(oauth2Service: OAuth2Service, delegate: AuthViewControllerDelegate? = nil, tokenStorage: OAuth2TokenStorage) {
         self.oauth2Service = oauth2Service
         self.tokenStorage = tokenStorage
         self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
 
     override func viewDidLoad() {
         super.viewDidLoad()
