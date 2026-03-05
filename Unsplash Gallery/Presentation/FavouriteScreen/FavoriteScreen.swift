@@ -9,7 +9,18 @@ import UIKit
 
 final class FavouriteViewController: UIViewController {
     private let collection = FeedCollection()
-    private let viewModel = FeedViewModel()
+    private let viewModel: FeedViewModel
+    private let imageListService: ImageListService
+
+    init(viewModel: FeedViewModel, imageListService: ImageListService) {
+        self.viewModel = viewModel
+        self.imageListService = imageListService
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,13 +28,13 @@ final class FavouriteViewController: UIViewController {
         setupNavigationBarTitle(text: "Favourite", imageName: "heart")
         viewModel.mode = .favourites
         viewModel.setupObserver()
-        ImageListService.shared.fetchLikedPhotosNextPage()
+        imageListService.fetchLikedPhotosNextPage()
 
         collection.viewModel = viewModel
 
         collection.onPhotoTap = { [weak self] index in
             guard let self = self else { return }
-            let detailsViewModel = DetailsViewModel(startIndex: index, mode: .favourites)
+            let detailsViewModel = DetailsViewModel(startIndex: index, mode: .favourites, imageListService: imageListService)
             let detailsViewController = DetailsScreenViewController(viewModel: detailsViewModel)
             self.navigationController?.pushViewController(detailsViewController, animated: true)
         }

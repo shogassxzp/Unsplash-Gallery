@@ -9,27 +9,34 @@ import Combine
 import Foundation
 
 final class ImageListService {
-    
     // MARK: - Publishers
+
     @Published private(set) var photos: [PhotoResult] = []
     @Published private(set) var likedPhotos: [PhotoResult] = []
-    
-    // MARK: - Dependencies (Injectable)
-        var urlSession = URLSession.shared
-        var tokenStorage = OAuth2TokenStorage.shared
-        var storageManager = StorageManager.shared
-        
-        // MARK: - Private Properties
-        private var likedIds: Set<String> = []
-        private var lastLoadedPage: Int?
-        private var lastLoadedPageLiked: Int?
-        private var task: URLSessionTask?
-        
-        private let baseURL = "https://api.unsplash.com"
 
-        private init() {
-            self.likedIds = Set(storageManager.fetchAllLikes())
-        }
+    // MARK: - Dependencies
+
+    private let urlSession: URLSession
+    private let tokenStorage: OAuth2TokenStorage
+    private let storageManager: StorageManager
+    private let profileService: ProfileService
+
+    // MARK: - Private Properties
+
+    private var likedIds: Set<String> = []
+    private var lastLoadedPage: Int?
+    private var lastLoadedPageLiked: Int?
+    private var task: URLSessionTask?
+
+    private let baseURL = "https://api.unsplash.com"
+
+    init(urlSession: URLSession = .shared, tokenStorage: OAuth2TokenStorage, storeManager: StorageManager, profileService: ProfileService) {
+        self.urlSession = urlSession
+        self.tokenStorage = tokenStorage
+        self.storageManager = storeManager
+        self.profileService = profileService
+        self.likedIds = Set(storageManager.fetchAllLikes())
+    }
 
     // MARK: - Public Methods
 
@@ -40,7 +47,7 @@ final class ImageListService {
         let nextPage = (lastLoadedPage ?? 0) + 1
         let queryItems = [
             URLQueryItem(name: "page", value: "\(nextPage)"),
-            URLQueryItem(name: "per_page", value: "30")
+            URLQueryItem(name: "per_page", value: "30"),
         ]
 
         guard let request = makeRequest(path: "/photos", queryItems: queryItems) else { return }
@@ -66,15 +73,15 @@ final class ImageListService {
         assert(Thread.isMainThread)
         guard task == nil else { return }
 
-        guard let username = ProfileService.shared.username else {
-            ProfileService.shared.fetchProfile { [weak self] _ in self?.fetchLikedPhotosNextPage() }
+        guard let username = profileService.username else {
+            profileService.fetchProfile { [weak self] _ in self?.fetchLikedPhotosNextPage() }
             return
         }
 
         let nextPage = (lastLoadedPageLiked ?? 0) + 1
         let queryItems = [
             URLQueryItem(name: "page", value: "\(nextPage)"),
-            URLQueryItem(name: "per_page", value: "30")
+            URLQueryItem(name: "per_page", value: "30"),
         ]
 
         guard let request = makeRequest(path: "/users/\(username)/likes", queryItems: queryItems) else { return }
@@ -98,7 +105,7 @@ final class ImageListService {
 
     func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void) {
         assert(Thread.isMainThread)
-        
+
         let method = isLike ? "POST" : "DELETE"
         guard let request = makeRequest(path: "/photos/\(photoId)/like", httpMethod: method) else { return }
 
@@ -109,7 +116,7 @@ final class ImageListService {
                     return
                 }
 
-                if let response = response as? HTTPURLResponse, !(200...299).contains(response.statusCode) {
+                if let response = response as? HTTPURLResponse, !(200 ... 299).contains(response.statusCode) {
                     completion(.failure(NSError(domain: "LikeError", code: response.statusCode)))
                     return
                 }
@@ -135,14 +142,14 @@ final class ImageListService {
     ) -> URLRequest? {
         guard var urlComponents = URLComponents(string: baseURL + path) else { return nil }
         urlComponents.queryItems = queryItems
-        
+
         guard let url = urlComponents.url else { return nil }
         var request = URLRequest(url: url)
         request.httpMethod = httpMethod
-        
+
         guard let token = tokenStorage.token else { return nil }
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
+
         return request
     }
 

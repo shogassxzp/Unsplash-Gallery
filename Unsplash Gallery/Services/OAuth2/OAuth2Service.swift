@@ -8,19 +8,20 @@ struct OAuthTokenResponse: Codable {
 }
 
 final class OAuth2Service {
-    static let shared = OAuth2Service()
-
     // MARK: - Dependencies
 
-    var urlSession = URLSession.shared
-    var storage = OAuth2TokenStorage.shared
+    private let urlSession: URLSession
+    private let storage: OAuth2TokenStorage
 
     // MARK: - Private Properties
 
     private var task: URLSessionTask?
     private var lastCode: String?
 
-    private init() {}
+    init(storage: OAuth2TokenStorage, urlSession: URLSession = .shared) {
+        self.storage = storage
+        self.urlSession = urlSession
+    }
 
     // MARK: - Public Methods
 
@@ -67,7 +68,7 @@ final class OAuth2Service {
             URLQueryItem(name: "client_secret", value: Constants.secretKey),
             URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
             URLQueryItem(name: "code", value: code),
-            URLQueryItem(name: "grant_type", value: "authorization_code")
+            URLQueryItem(name: "grant_type", value: "authorization_code"),
         ]
 
         guard let authTokenUrl = urlComponents.url else {

@@ -7,8 +7,22 @@ protocol AuthViewControllerDelegate: AnyObject {
 final class AuthViewController: UIViewController, WebViewViewControllerDelegate {
     private let logoImageView = UIImageView()
     private let loginButton = UIButton(type: .system)
-
+    private let oauth2Service: OAuth2Service
+    private let tokenStorage: OAuth2TokenStorage
+    
     weak var delegate: AuthViewControllerDelegate?
+    
+    init(oauth2Service: OAuth2Service, delegate: AuthViewControllerDelegate? = nil, tokenStorage: OAuth2TokenStorage) {
+        self.oauth2Service = oauth2Service
+        self.tokenStorage = tokenStorage
+        self.delegate = delegate
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,11 +79,11 @@ final class AuthViewController: UIViewController, WebViewViewControllerDelegate 
     }
 
     func webViewViewController(_ viewController: WebViewViewController, didAuthenticateWithCode code: String) {
-        OAuth2Service.shared.fetchOAuthToken(code: code) { [weak self] result in
+        oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
             guard let self else { return }
             switch result {
             case let .success(token):
-                OAuth2TokenStorage.shared.token = token
+                tokenStorage.token = token
                 if self.delegate != nil {
                     self.delegate?.didAuthenticate(self)
                     self.navigationController?.popViewController(animated: true)
