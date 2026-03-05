@@ -9,9 +9,6 @@ import CoreData
 import UIKit
 
 final class StorageManager {
-    static let shared = StorageManager()
-    private init() {}
-
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "FavouritesModel")
         container.loadPersistentStores { _, error in

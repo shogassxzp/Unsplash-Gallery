@@ -9,7 +9,7 @@ import Combine
 import Foundation
 
 final class DetailsViewModel {
-    private let imageListService = ImageListService.shared
+    private let imageListService: ImageListService
     private var cancellables = Set<AnyCancellable>()
     private let mode: FeedMode
     let transitionDirection = PassthroughSubject<Bool, Never>()
@@ -28,8 +28,9 @@ final class DetailsViewModel {
         currentPhoto?.createdAt?.toReadableDate() ?? "Date unknown"
     }
 
-    init(startIndex: Int, mode: FeedMode) {
+    init(startIndex: Int, mode: FeedMode,imageListService: ImageListService) {
         currentIndex = startIndex
+        self.imageListService = imageListService
         self.mode = mode
         setupBindings()
     }

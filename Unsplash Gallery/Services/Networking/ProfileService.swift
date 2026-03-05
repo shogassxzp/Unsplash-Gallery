@@ -8,17 +8,18 @@
 import Foundation
 
 final class ProfileService {
-    static let shared = ProfileService()
-    
     // MARK: - Dependencies
-    var urlSession = URLSession.shared
-    var tokenStorage = OAuth2TokenStorage.shared
+    var urlSession: URLSession
+    var tokenStorage: OAuth2TokenStorage
     
     // MARK: - Private Properties
     private(set) var username: String?
     private var task: URLSessionTask?
     
-    private init() {}
+    init(urlSession: URLSession = .shared, tokenStorage: OAuth2TokenStorage) {
+        self.urlSession = urlSession
+        self.tokenStorage = tokenStorage
+    }
 
     // MARK: - Public Methods
     func fetchProfile(completion: @escaping (Result<String, Error>) -> Void) {

@@ -9,9 +9,13 @@ import Combine
 import Foundation
 
 final class FeedViewModel {
-    private let imageListService = ImageListService.shared
+    private let imageListService: ImageListService
     private var cancellables = Set<AnyCancellable>()
-
+    
+    init(imageListService: ImageListService) {
+        self.imageListService = imageListService
+    }
+    
     var mode: FeedMode = .feed
     var onDataUpdated: (() -> Void)?
 

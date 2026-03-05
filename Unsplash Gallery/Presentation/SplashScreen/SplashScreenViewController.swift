@@ -1,6 +1,23 @@
 import UIKit
 
 final class SplashScreenViewController: UIViewController, AuthViewControllerDelegate {
+    private let storage: OAuth2TokenStorage
+    private let profileService: ProfileService
+    private let oauth2Service: OAuth2Service
+    private let imageListService: ImageListService
+
+    init(storage: OAuth2TokenStorage, profileService: ProfileService, oauth2Service: OAuth2Service, imageListService: ImageListService) {
+        self.storage = storage
+        self.profileService = profileService
+        self.oauth2Service = oauth2Service
+        self.imageListService = imageListService
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     private var logoImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(resource: .unsplashLogo)
@@ -9,8 +26,6 @@ final class SplashScreenViewController: UIViewController, AuthViewControllerDele
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
-
-    private let storage = OAuth2TokenStorage.shared
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -30,12 +45,16 @@ final class SplashScreenViewController: UIViewController, AuthViewControllerDele
             logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             logoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             logoImageView.widthAnchor.constraint(equalToConstant: 72),
-            logoImageView.heightAnchor.constraint(equalToConstant: 74)
+            logoImageView.heightAnchor.constraint(equalToConstant: 74),
         ])
     }
 
     private func presentAuthView() {
-        let authViewController = AuthViewController()
+        let authViewController = AuthViewController(
+            oauth2Service: oauth2Service,
+            delegate: self,
+            tokenStorage: storage
+        )
         authViewController.delegate = self
         let navigationController = UINavigationController(rootViewController: authViewController)
         navigationController.modalPresentationStyle = .fullScreen
@@ -51,7 +70,7 @@ final class SplashScreenViewController: UIViewController, AuthViewControllerDele
     }
 
     private func fetchProfileAndSwitch() {
-        ProfileService.shared.fetchProfile { [weak self] result in
+        profileService.fetchProfile { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success:
@@ -71,7 +90,16 @@ final class SplashScreenViewController: UIViewController, AuthViewControllerDele
             return
         }
 
-        let tabBarController = TabBarController()
+        let feedViewModel = FeedViewModel(imageListService: imageListService)
+        feedViewModel.mode = .feed
+
+        let favViewModel = FeedViewModel(imageListService: imageListService)
+        favViewModel.mode = .favourites
+        
+        let feedViewController = FeedViewController(viewModel: feedViewModel, imageListService: imageListService)
+        let favoutiteViewController = FavouriteViewController(viewModel: favViewModel, imageListService: imageListService)
+
+        let tabBarController = TabBarController(feedViewController: feedViewController, favouriteViewController: favoutiteViewController)
 
         window.rootViewController = tabBarController
         window.makeKeyAndVisible()
