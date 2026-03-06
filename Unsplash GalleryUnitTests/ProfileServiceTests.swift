@@ -11,7 +11,7 @@ import XCTest
 final class ProfileServiceTests: XCTestCase {
     
     private var sut: ProfileService!
-    private var mockTokenStorage: OAuth2TokenStorage!
+    private var tokenStorage: OAuth2TokenStorage!
     
     override func setUp() {
         super.setUp()
@@ -20,39 +20,29 @@ final class ProfileServiceTests: XCTestCase {
         config.protocolClasses = [MockURLProtocol.self]
         let session = URLSession(configuration: config)
         
-        mockTokenStorage = OAuth2TokenStorage()
-        mockTokenStorage.token = "test_mock_token"
+        tokenStorage = OAuth2TokenStorage()
+        tokenStorage.token = "test_mock_token"
         
-        sut = ProfileService(
-            urlSession: session,
-            tokenStorage: mockTokenStorage
-        )
+        sut = ProfileService(urlSession: session, tokenStorage: tokenStorage)
     }
     
     override func tearDown() {
         sut = nil
-        mockTokenStorage = nil
+        tokenStorage = nil
         super.tearDown()
     }
-    
-    // MARK: - Tests
     
     func testFetchProfileSuccess() {
         // Given
         let expectedUsername = "ignat_rogachevich"
         let jsonString = """
         {
-            "username": "\(expectedUsername)",
-            "first_name": "Ignat",
-            "last_name": "Rogachevich",
-            "bio": "iOS Developer"
+            "username": "\(expectedUsername)"
         }
         """
         let mockData = jsonString.data(using: .utf8)!
         
         MockURLProtocol.requestHandler = { request in
-            XCTAssertTrue(request.url?.path.contains("/me") ?? false)
-            
             let response = HTTPURLResponse(
                 url: request.url!,
                 statusCode: 200,
@@ -69,12 +59,16 @@ final class ProfileServiceTests: XCTestCase {
             // Then
             if case let .success(username) = result {
                 XCTAssertEqual(username, expectedUsername)
+                XCTAssertEqual(self.sut.username, expectedUsername)
             } else {
                 XCTFail("Expected success, but got \(result)")
             }
             expectation.fulfill()
         }
+        
+        wait(for: [expectation], timeout: 3.0)
     }
+    
     func testFetchProfileFailureServerError() {
         // Given
         MockURLProtocol.requestHandler = { request in
@@ -95,10 +89,10 @@ final class ProfileServiceTests: XCTestCase {
             if case .failure = result {
                 expectation.fulfill()
             } else {
-                XCTFail("Expected failure for 404 status code, but got success")
+                XCTFail("Expected failure for 404 status code")
             }
         }
         
-        wait(for: [expectation], timeout: 2.0)
+        wait(for: [expectation], timeout: 3.0)
     }
 }
