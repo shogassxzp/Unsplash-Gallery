@@ -9,26 +9,43 @@ import Combine
 import Foundation
 
 final class FeedViewModel {
+    // MARK: - Properties
+    
     private let imageListService: ImageListService
     private var cancellables = Set<AnyCancellable>()
-    
-    init(imageListService: ImageListService) {
-        self.imageListService = imageListService
-    }
     
     var mode: FeedMode = .feed
     var onDataUpdated: (() -> Void)?
 
+    // MARK: - Computed Properties
+    
+    private var currentPhotos: [PhotoResult] {
+        mode == .feed ? imageListService.photos : imageListService.likedPhotos
+    }
+
     var photosCount: Int {
-        return mode == .feed ? imageListService.photos.count : imageListService.likedPhotos.count
+        currentPhotos.count
     }
 
+    // MARK: - Init
+    
+    init(imageListService: ImageListService) {
+        self.imageListService = imageListService
+    }
+}
+
+// MARK: - Data Access
+
+extension FeedViewModel {
     func photo(at index: Int) -> PhotoResult? {
-        let photos = mode == .feed ? imageListService.photos : imageListService.likedPhotos
-        guard index < photos.count else { return nil }
-        return photos[index]
+        guard currentPhotos.indices.contains(index) else { return nil }
+        return currentPhotos[index]
     }
+}
 
+// MARK: - Network Logic
+
+extension FeedViewModel {
     func fetchNextPage() {
         if mode == .feed {
             imageListService.fetchPhotosNextPage()
@@ -38,10 +55,13 @@ final class FeedViewModel {
     }
 
     func toggleLike(at index: Int, completion: @escaping (Bool) -> Void) {
-        let photos = mode == .feed ? imageListService.photos : imageListService.likedPhotos
-        guard index < photos.count else { return }
+        let photos = currentPhotos
+        guard photos.indices.contains(index) else {
+            completion(false)
+            return
+        }
+        
         let photo = photos[index]
-
         imageListService.changeLike(photoId: photo.id, isLike: !photo.likedByUser) { result in
             if case .success = result {
                 completion(true)
@@ -50,13 +70,15 @@ final class FeedViewModel {
             }
         }
     }
+}
 
-    // MARK: - Combine Binding
+// MARK: - Combine Bindings
 
+extension FeedViewModel {
     func setupObserver() {
-        let publisher = (mode == .feed)
-            ? imageListService.$photos
-            : imageListService.$likedPhotos
+        cancellables.removeAll()
+        
+        let publisher = mode == .feed ? imageListService.$photos : imageListService.$likedPhotos
 
         publisher
             .receive(on: DispatchQueue.main)

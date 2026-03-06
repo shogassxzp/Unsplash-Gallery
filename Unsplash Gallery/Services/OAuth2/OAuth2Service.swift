@@ -68,7 +68,7 @@ final class OAuth2Service {
             URLQueryItem(name: "client_secret", value: Constants.secretKey),
             URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
             URLQueryItem(name: "code", value: code),
-            URLQueryItem(name: "grant_type", value: "authorization_code"),
+            URLQueryItem(name: "grant_type", value: "authorization_code")
         ]
 
         guard let authTokenUrl = urlComponents.url else {

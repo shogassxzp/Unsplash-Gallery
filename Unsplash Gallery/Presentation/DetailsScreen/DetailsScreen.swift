@@ -140,7 +140,7 @@ private extension DetailsScreenViewController {
             textInfoStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             textInfoStack.trailingAnchor.constraint(equalTo: likeButton.leadingAnchor, constant: -12),
             textInfoStack.topAnchor.constraint(equalTo: detailsImageView.bottomAnchor, constant: 20),
-            textInfoStack.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            textInfoStack.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
         ])
     }
 
