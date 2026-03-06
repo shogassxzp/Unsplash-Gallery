@@ -29,6 +29,7 @@ final class FeedCell: UICollectionViewCell {
         return indicator
     }()
 
+    private var isLiked: Bool = false
     private var imageId: String?
     var collectionImageView = UIImageView()
     var shadowView = UIView()
@@ -107,13 +108,7 @@ final class FeedCell: UICollectionViewCell {
         likeHeartView.alpha = 0
         likeHeartView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
 
-        UIView.animate(
-            withDuration: 0.5,
-            delay: 0,
-            usingSpringWithDamping: 0.5,
-            initialSpringVelocity: 0.5,
-            options: .curveEaseOut
-        ) {
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: .curveEaseOut) {
             self.likeHeartView.alpha = 1
             self.likeHeartView.transform = .identity
         } completion: { _ in
@@ -122,7 +117,7 @@ final class FeedCell: UICollectionViewCell {
                 self.likeHeartView.transform = CGAffineTransform(scaleX: 1.8, y: 1.8)
             } completion: { _ in
                 UIView.animate(withDuration: 0.2) {
-                    self.likeIndicator.alpha = 1
+                    self.likeIndicator.alpha = self.isLiked ? 1 : 0
                 }
             }
         }
@@ -131,16 +126,16 @@ final class FeedCell: UICollectionViewCell {
 
 extension FeedCell {
     func configure(with urlString: String, isLiked: Bool) {
+        self.isLiked = isLiked
         guard let url = URL(string: urlString) else { return }
+
         collectionImageView.kf.indicatorType = .activity
         collectionImageView.kf.setImage(
             with: url,
             placeholder: UIImage(resource: .imagePlaceholder),
-            options: [
-                .transition(.fade(0.25)),
-                .cacheSerializer(FormatIndicatedCacheSerializer.jpeg)
-            ]
+            options: [.transition(.fade(0.25))]
         )
+
         likeIndicator.alpha = isLiked ? 1 : 0
     }
 }

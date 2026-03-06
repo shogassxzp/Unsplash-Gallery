@@ -45,7 +45,7 @@ final class SplashScreenViewController: UIViewController, AuthViewControllerDele
             logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             logoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             logoImageView.widthAnchor.constraint(equalToConstant: 72),
-            logoImageView.heightAnchor.constraint(equalToConstant: 74),
+            logoImageView.heightAnchor.constraint(equalToConstant: 74)
         ])
     }
 
