@@ -24,9 +24,8 @@ final class DetailsScreenViewController: UIViewController {
 
     private lazy var detailsImageView: UIImageView = {
         let details = UIImageView()
-        details.contentMode = .scaleAspectFill
         details.layer.cornerRadius = 24
-        details.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        details.layer.masksToBounds = true
         details.clipsToBounds = true
         details.kf.indicatorType = .activity
         details.backgroundColor = .blackAdaptive
@@ -72,6 +71,21 @@ final class DetailsScreenViewController: UIViewController {
         return button
     }()
 
+    private lazy var textInfoStack: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 8
+        stack.alignment = .leading
+        return stack
+    }()
+
+    private var aspectRatio: CGFloat {
+        guard let photo = viewModel.currentPhoto, photo.height > 0 else { return 1.0 }
+        return CGFloat(photo.width) / CGFloat(photo.height)
+    }
+
+    private var imageAspectRatioConstraint: NSLayoutConstraint?
+
     // MARK: - ViewDidAppear
 
     override func viewDidAppear(_ animated: Bool) {
@@ -99,48 +113,53 @@ final class DetailsScreenViewController: UIViewController {
         setupLayout()
         setupGesture()
         bindViewModel()
-        setupNavigationBar() 
-        
+        setupNavigationBar()
     }
 
     private func addSubviews() {
-        [detailsImageView, publishedLabel, descriptionLabel, authorNameLabel, likeButton].forEach {
+        [detailsImageView, textInfoStack, likeButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
+        }
+        [publishedLabel, descriptionLabel, authorNameLabel].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            textInfoStack.addArrangedSubview($0)
         }
     }
 
     private func setupLayout() {
         NSLayoutConstraint.activate([
-            detailsImageView.topAnchor.constraint(equalTo: view.topAnchor),
+            detailsImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             detailsImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             detailsImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            detailsImageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.7),
 
             likeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             likeButton.topAnchor.constraint(equalTo: detailsImageView.bottomAnchor, constant: 16),
             likeButton.widthAnchor.constraint(equalToConstant: 44),
             likeButton.heightAnchor.constraint(equalToConstant: 44),
 
-            descriptionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            descriptionLabel.topAnchor.constraint(equalTo: detailsImageView.bottomAnchor, constant: 20),
-            descriptionLabel.trailingAnchor.constraint(equalTo: likeButton.leadingAnchor, constant: -12),
-
-            publishedLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            publishedLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-            publishedLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-
-            authorNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            authorNameLabel.bottomAnchor.constraint(equalTo: publishedLabel.topAnchor, constant: -8),
-            authorNameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+            textInfoStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            textInfoStack.trailingAnchor.constraint(equalTo: likeButton.leadingAnchor, constant: -12),
+            textInfoStack.topAnchor.constraint(equalTo: detailsImageView.bottomAnchor, constant: 20),
+            textInfoStack.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
         ])
     }
-    
+
+    private func updateImageConstraints(aspectRatio: CGFloat) {
+        imageAspectRatioConstraint?.isActive = false
+        imageAspectRatioConstraint = detailsImageView.widthAnchor.constraint(equalTo: detailsImageView.heightAnchor, multiplier: aspectRatio)
+
+        imageAspectRatioConstraint?.isActive = true
+
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+
     private func setupNavigationBar() {
         if #available(iOS 26.0, *) {
             navigationController?.navigationBar.tintColor = .blackAdaptive
         } else {
-            
             let blurEffect = UIBlurEffect(style: .systemThinMaterial)
             let blurView = UIVisualEffectView(effect: blurEffect)
             blurView.frame = CGRect(x: 0, y: 0, width: 35, height: 35)
@@ -200,6 +219,7 @@ final class DetailsScreenViewController: UIViewController {
             viewModel.prevPhoto()
         }
     }
+
     @objc private func backAction() {
         navigationController?.popViewController(animated: true)
     }
@@ -235,14 +255,30 @@ final class DetailsScreenViewController: UIViewController {
     }
 
     private func updateUI(with photo: PhotoResult) {
+        updateImageConstraints(aspectRatio: aspectRatio)
+        detailsImageView.contentMode = .scaleAspectFill
+        let placeholder = UIImage(resource: .imagePlaceholder).withConfiguration(
+            UIImage.SymbolConfiguration(pointSize: 40)
+        )
+
         authorNameLabel.text = viewModel.authorName
-        descriptionLabel.text = viewModel.description
         publishedLabel.text = "Published: \(viewModel.formattedDate)"
+        if let desc = photo.description, !desc.isEmpty {
+            descriptionLabel.text = desc
+            descriptionLabel.isHidden = false
+        } else {
+            descriptionLabel.isHidden = true
+        }
 
         detailsImageView.kf.setImage(
             with: URL(string: photo.urls.full),
-            placeholder: UIImage(resource: .imagePlaceholder),
-            options: [.transition(.fade(0.3))]
+            placeholder: placeholder,
+            options: [.transition(.fade(0.3))],
+            completionHandler: { [weak self] result in
+                if case .success = result {
+                    self?.detailsImageView.contentMode = .scaleAspectFit
+                }
+            }
         )
 
         let imageName = photo.likedByUser ? "heart.fill" : "heart"
