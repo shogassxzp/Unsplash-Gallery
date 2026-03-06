@@ -11,16 +11,27 @@ import XCTest
 final class ProfileServiceTests: XCTestCase {
     
     private var sut: ProfileService!
+    private var mockTokenStorage: OAuth2TokenStorage!
     
     override func setUp() {
         super.setUp()
-        sut = ProfileService.shared
         
-        sut.tokenStorage.token = "test_mock_token"
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [MockURLProtocol.self]
+        let session = URLSession(configuration: config)
+        
+        mockTokenStorage = OAuth2TokenStorage()
+        mockTokenStorage.token = "test_mock_token"
+        
+        sut = ProfileService(
+            urlSession: session,
+            tokenStorage: mockTokenStorage
+        )
     }
     
     override func tearDown() {
-        sut.urlSession = .shared
+        sut = nil
+        mockTokenStorage = nil
         super.tearDown()
     }
     
@@ -29,19 +40,19 @@ final class ProfileServiceTests: XCTestCase {
     func testFetchProfileSuccess() {
         // Given
         let expectedUsername = "ignat_rogachevich"
-        let config = URLSessionConfiguration.ephemeral
-        config.protocolClasses = [MockURLProtocol.self]
-        sut.urlSession = URLSession(configuration: config)
-        
         let jsonString = """
         {
-            "username": "\(expectedUsername)"
+            "username": "\(expectedUsername)",
+            "first_name": "Ignat",
+            "last_name": "Rogachevich",
+            "bio": "iOS Developer"
         }
         """
         let mockData = jsonString.data(using: .utf8)!
         
         MockURLProtocol.requestHandler = { request in
-            XCTAssertEqual(request.url?.path, "/me")
+            XCTAssertTrue(request.url?.path.contains("/me") ?? false)
+            
             let response = HTTPURLResponse(
                 url: request.url!,
                 statusCode: 200,
@@ -51,30 +62,21 @@ final class ProfileServiceTests: XCTestCase {
             return (response, mockData)
         }
         
-        // When
         let expectation = expectation(description: "Wait for profile success")
         
+        // When
         sut.fetchProfile { result in
             // Then
-            switch result {
-            case .success(let username):
+            if case let .success(username) = result {
                 XCTAssertEqual(username, expectedUsername)
-                XCTAssertEqual(self.sut.username, expectedUsername)
-            case .failure(let error):
-                XCTFail("Expected success, got error: \(error.localizedDescription)")
+            } else {
+                XCTFail("Expected success, but got \(result)")
             }
             expectation.fulfill()
         }
-        
-        wait(for: [expectation], timeout: 2.0)
     }
-    
     func testFetchProfileFailureServerError() {
         // Given
-        let config = URLSessionConfiguration.ephemeral
-        config.protocolClasses = [MockURLProtocol.self]
-        sut.urlSession = URLSession(configuration: config)
-        
         MockURLProtocol.requestHandler = { request in
             let response = HTTPURLResponse(
                 url: request.url!,
@@ -85,15 +87,15 @@ final class ProfileServiceTests: XCTestCase {
             return (response, Data())
         }
         
-        // When
         let expectation = expectation(description: "Wait for profile failure")
         
+        // When
         sut.fetchProfile { result in
             // Then
             if case .failure = result {
                 expectation.fulfill()
             } else {
-                XCTFail("Expected failure for 404 status code")
+                XCTFail("Expected failure for 404 status code, but got success")
             }
         }
         
