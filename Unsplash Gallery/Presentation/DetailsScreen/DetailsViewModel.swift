@@ -9,17 +9,22 @@ import Combine
 import Foundation
 
 final class DetailsViewModel {
+    // MARK: - Properties
+
     private let imageListService: ImageListService
     private var cancellables = Set<AnyCancellable>()
     private let mode: FeedMode
-    let transitionDirection = PassthroughSubject<Bool, Never>()
 
-    // MARK: - Published Properties
+    let transitionDirection = PassthroughSubject<Bool, Never>()
 
     @Published private(set) var currentPhoto: PhotoResult?
     @Published private(set) var currentIndex: Int
 
-    // MARK: - UI Properties
+    // MARK: - Computed Properties
+
+    private var currentPhotosArray: [PhotoResult] {
+        mode == .feed ? imageListService.photos : imageListService.likedPhotos
+    }
 
     var authorName: String { currentPhoto?.user.name ?? "Unknown Author" }
     var description: String { currentPhoto?.description ?? "No description" }
@@ -28,57 +33,69 @@ final class DetailsViewModel {
         currentPhoto?.createdAt?.toReadableDate() ?? "Date unknown"
     }
 
-    init(startIndex: Int, mode: FeedMode,imageListService: ImageListService) {
+    // MARK: - Init
+
+    init(startIndex: Int, mode: FeedMode, imageListService: ImageListService) {
         currentIndex = startIndex
         self.imageListService = imageListService
         self.mode = mode
         setupBindings()
     }
+}
 
-    // MARK: - Bindings
+// MARK: - Navigation Logic
 
-    private func setupBindings() {
-        let sourcePublisher = (mode == .feed)
-            ? imageListService.$photos
-            : imageListService.$likedPhotos
-
-        Publishers.CombineLatest(sourcePublisher, $currentIndex)
-            .map { photos, index in
-                guard index >= 0, index < photos.count else { return nil }
-                return photos[index]
-            }
-            .assign(to: \.currentPhoto, on: self)
-            .store(in: &cancellables)
-    }
-
-    // MARK: - Actions
-
+extension DetailsViewModel {
     func nextPhoto() {
-        let currentArray = (mode == .feed) ? imageListService.photos : imageListService.likedPhotos
+        let photos = currentPhotosArray
 
-        if currentIndex >= currentArray.count - 2 {
-            if mode == .feed {
-                imageListService.fetchPhotosNextPage()
-            } else {
-                imageListService.fetchLikedPhotosNextPage()
-            }
+        if currentIndex >= photos.count - 2 {
+            fetchNextPage()
         }
 
-        if currentIndex < currentArray.count - 1 {
-            currentIndex += 1
-            transitionDirection.send(true)
-        }
+        guard currentIndex < photos.count - 1 else { return }
+
+        currentIndex += 1
+        transitionDirection.send(true)
     }
 
     func prevPhoto() {
-        if currentIndex > 0 {
-            currentIndex -= 1
-            transitionDirection.send(false)
+        guard currentIndex > 0 else { return }
+
+        currentIndex -= 1
+        transitionDirection.send(false)
+    }
+
+    private func fetchNextPage() {
+        if mode == .feed {
+            imageListService.fetchPhotosNextPage()
+        } else {
+            imageListService.fetchLikedPhotosNextPage()
+        }
+    }
+}
+
+// MARK: - Actions & Bindings
+
+extension DetailsViewModel {
+    func toggleLike() {
+        guard let photo = currentPhoto else { return }
+
+        imageListService.changeLike(photoId: photo.id, isLike: !photo.likedByUser) { result in
+            if case let .failure(error) = result {
+                print("Failed to toggle like: \(error)")
+            }
         }
     }
 
-    func toggleLike() {
-        guard let photo = currentPhoto else { return }
-        imageListService.changeLike(photoId: photo.id, isLike: !photo.likedByUser) { _ in }
+    private func setupBindings() {
+        let sourcePublisher = mode == .feed ? imageListService.$photos : imageListService.$likedPhotos
+
+        Publishers.CombineLatest(sourcePublisher, $currentIndex)
+            .map { photos, index -> PhotoResult? in
+                guard photos.indices.contains(index) else { return nil }
+                return photos[index]
+            }
+            .assign(to: &$currentPhoto)
     }
 }
