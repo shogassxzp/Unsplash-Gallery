@@ -26,15 +26,21 @@ final class FavouriteViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupNavigationBarTitle(text: "Favourite", imageName: "heart")
+        
         viewModel.mode = .favourites
-        viewModel.setupObserver()
-        imageListService.fetchLikedPhotosNextPage()
-
         collection.viewModel = viewModel
+        viewModel.setupObserver()
+
+        imageListService.resetLikedPhotos()
+        imageListService.fetchLikedPhotosNextPage()
 
         collection.onPhotoTap = { [weak self] index in
             guard let self = self else { return }
-            let detailsViewModel = DetailsViewModel(startIndex: index, mode: .favourites, imageListService: imageListService)
+            let detailsViewModel = DetailsViewModel(
+                startIndex: index,
+                mode: .favourites,
+                imageListService: self.imageListService
+            )
             let detailsViewController = DetailsScreenViewController(viewModel: detailsViewModel)
             self.navigationController?.pushViewController(detailsViewController, animated: true)
         }
