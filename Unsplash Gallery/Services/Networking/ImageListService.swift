@@ -179,10 +179,22 @@ final class ImageListService {
     private func syncWithLikes(_ results: [PhotoResult]) -> [PhotoResult] {
         results.map { photo in
             let isLikedLocally = likedIds.contains(photo.id)
+            
+            if photo.likedByUser && !isLikedLocally {
+                likedIds.insert(photo.id)
+                storageManager.saveLike(id: photo.id)
+            }
+            let finalLikeStatus = isLikedLocally || photo.likedByUser
+            
             return PhotoResult(
-                id: photo.id, createdAt: photo.createdAt, width: photo.width,
-                height: photo.height, description: photo.description,
-                urls: photo.urls, likedByUser: isLikedLocally, user: photo.user
+                id: photo.id,
+                createdAt: photo.createdAt,
+                width: photo.width,
+                height: photo.height,
+                description: photo.description,
+                urls: photo.urls,
+                likedByUser: finalLikeStatus,
+                user: photo.user
             )
         }
     }
