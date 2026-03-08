@@ -27,15 +27,16 @@ final class ImageListService {
     private var lastLoadedPage: Int?
     private var lastLoadedPageLiked: Int?
     private var task: URLSessionTask?
+    private var likedTask: URLSessionTask?
 
     private let baseURL = "https://api.unsplash.com"
 
     init(urlSession: URLSession = .shared, tokenStorage: OAuth2TokenStorage, storeManager: StorageManager, profileService: ProfileService) {
         self.urlSession = urlSession
         self.tokenStorage = tokenStorage
-        self.storageManager = storeManager
+        storageManager = storeManager
         self.profileService = profileService
-        self.likedIds = Set(storageManager.fetchAllLikes())
+        likedIds = Set(storageManager.fetchAllLikes())
     }
 
     // MARK: - Public Methods
@@ -71,7 +72,7 @@ final class ImageListService {
 
     func fetchLikedPhotosNextPage() {
         assert(Thread.isMainThread)
-        guard task == nil else { return }
+        guard likedTask == nil else { return }
 
         guard let username = profileService.username else {
             profileService.fetchProfile { [weak self] _ in self?.fetchLikedPhotosNextPage() }
@@ -86,7 +87,7 @@ final class ImageListService {
 
         guard let request = makeRequest(path: "/users/\(username)/likes", queryItems: queryItems) else { return }
 
-        task = urlSession.objectTask(for: request) { [weak self] (result: Result<[PhotoResult], Error>) in
+        likedTask = urlSession.objectTask(for: request) { [weak self] (result: Result<[PhotoResult], Error>) in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 switch result {
@@ -97,10 +98,10 @@ final class ImageListService {
                 case let .failure(error):
                     print("[fetchLikedPhotos]: \(error.localizedDescription)")
                 }
-                self.task = nil
+                self.likedTask = nil
             }
         }
-        task?.resume()
+        likedTask?.resume()
     }
 
     func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void) {
@@ -163,29 +164,32 @@ final class ImageListService {
         }
 
         if let index = photos.firstIndex(where: { $0.id == photoId }) {
-            let photo = photos[index]
-            photos[index] = PhotoResult(
-                id: photo.id, createdAt: photo.createdAt, width: photo.width,
-                height: photo.height, description: photo.description,
-                urls: photo.urls, likedByUser: isLike, user: photo.user
-            )
+            photos[index].likedByUser = isLike
         }
 
-        if !isLike {
-            likedPhotos.removeAll(where: { $0.id == photoId })
+        if isLike {
+            if !likedPhotos.contains(where: { $0.id == photoId }) {
+                if let photo = photos.first(where: { $0.id == photoId }) {
+                    likedPhotos.append(photo)
+                }
+            }
+        } else {
+            likedPhotos.removeAll { $0.id == photoId }
         }
+        
+        print("DEBUG: Status updated. Liked count: \(likedPhotos.count)")
     }
-
+    
     private func syncWithLikes(_ results: [PhotoResult]) -> [PhotoResult] {
         results.map { photo in
             let isLikedLocally = likedIds.contains(photo.id)
-            
+
             if photo.likedByUser && !isLikedLocally {
                 likedIds.insert(photo.id)
                 storageManager.saveLike(id: photo.id)
             }
             let finalLikeStatus = isLikedLocally || photo.likedByUser
-            
+
             return PhotoResult(
                 id: photo.id,
                 createdAt: photo.createdAt,
