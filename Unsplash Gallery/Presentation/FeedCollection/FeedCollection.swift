@@ -78,7 +78,8 @@ final class FeedCollection: UICollectionView {
 
 extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel?.photosCount ?? 0
+        let count = viewModel?.photosCount ?? 0
+        return count
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -101,7 +102,6 @@ extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard isReadOnlyMode, let indexPath = indexPaths.first else { return nil }
-        guard let indexPath = indexPaths.first else { return nil }
 
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             let deleteAction = UIAction(

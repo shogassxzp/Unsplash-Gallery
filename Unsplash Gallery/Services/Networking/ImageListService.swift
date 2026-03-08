@@ -168,9 +168,10 @@ final class ImageListService {
         }
 
         if isLike {
-            if !likedPhotos.contains(where: { $0.id == photoId }),
-               let photo = photos.first(where: { $0.id == photoId }) {
-                likedPhotos.append(photo)
+            if !likedPhotos.contains(where: { $0.id == photoId }) {
+                if let photo = photos.first(where: { $0.id == photoId }) {
+                    likedPhotos.append(photo)
+                }
             }
         } else {
             likedPhotos.removeAll { $0.id == photoId }

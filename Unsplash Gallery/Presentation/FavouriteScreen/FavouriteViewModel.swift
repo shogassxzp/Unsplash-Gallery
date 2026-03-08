@@ -12,8 +12,16 @@ final class FavoritesViewModel: PhotoFeedViewModelProtocol {
     private let imageListService: ImageListService
     private var cancellables = Set<AnyCancellable>()
 
-    var onDataUpdated: (() -> Void)?
-    var photosCount: Int { imageListService.likedPhotos.count }
+    var onDataUpdated: (() -> Void)? {
+        didSet {
+            if let onDataUpdated = onDataUpdated {
+                onDataUpdated()
+            }
+        }
+    }
+    var photosCount: Int {
+        return imageListService.likedPhotos.count
+    }
 
     init(imageListService: ImageListService) {
         self.imageListService = imageListService
@@ -32,7 +40,7 @@ final class FavoritesViewModel: PhotoFeedViewModelProtocol {
     func toggleLike(at index: Int, completion: @escaping (Bool) -> Void) {
         guard imageListService.likedPhotos.indices.contains(index) else { return }
         let photo = imageListService.likedPhotos[index]
-        
+
         imageListService.changeLike(photoId: photo.id, isLike: false) { result in
             DispatchQueue.main.async {
                 switch result {

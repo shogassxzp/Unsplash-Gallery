@@ -91,7 +91,6 @@ final class SplashScreenViewController: UIViewController, AuthViewControllerDele
         }
 
         let feedViewModel = FeedViewModel(imageListService: imageListService)
-
         let favViewModel = FavoritesViewModel(imageListService: imageListService)
         
         let feedViewController = FeedViewController(viewModel: feedViewModel, imageListService: imageListService)

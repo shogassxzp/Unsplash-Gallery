@@ -26,7 +26,7 @@ final class FavouriteViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupNavigationBarTitle(text: "Favourite", imageName: "heart")
-        collection.viewModel = viewModel
+        collection.viewModel = self.viewModel
         collection.isReadOnlyMode = true
         imageListService.fetchLikedPhotosNextPage()
 
@@ -41,8 +41,30 @@ final class FavouriteViewController: UIViewController {
             self.navigationController?.pushViewController(detailsViewController, animated: true)
         }
         viewModel.onDataUpdated = { [weak self] in
-            print("FavouriteUI: Reloading collection with count: \(self?.viewModel.photosCount ?? 0)")
-            self?.collection.reloadData()
+            guard let self = self else { return }
+            let count = self.viewModel.photosCount
+            
+            DispatchQueue.main.async {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    self.collection.reloadData()
+                    self.collection.collectionViewLayout.invalidateLayout()
+                    self.collection.layoutIfNeeded()
+                }
+            }
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        collection.viewModel = self.viewModel
+        self.collection.reloadData()
+        self.collection.collectionViewLayout.invalidateLayout()
+        self.collection.layoutIfNeeded()
+        
+        DispatchQueue.main.async {
+            self.collection.collectionViewLayout.invalidateLayout()
+            self.collection.layoutIfNeeded()
         }
     }
 
@@ -59,3 +81,4 @@ final class FavouriteViewController: UIViewController {
         ])
     }
 }
+
