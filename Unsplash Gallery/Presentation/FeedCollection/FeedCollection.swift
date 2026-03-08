@@ -13,12 +13,8 @@ enum FeedMode {
 }
 
 final class FeedCollection: UICollectionView {
-    var viewModel: FeedViewModel? {
-        didSet {
-            bindViewModel()
-        }
-    }
-
+    var viewModel: PhotoFeedViewModelProtocol?
+    var isReadOnlyMode: Bool = false
     private var selectedIndexPath: IndexPath?
     var onPhotoTap: ((Int) -> Void)?
     var onDeletePhoto: ((Int) -> Void)?
@@ -32,12 +28,6 @@ final class FeedCollection: UICollectionView {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    private func bindViewModel() {
-        viewModel?.onDataUpdated = { [weak self] in
-            self?.reloadData()
-        }
     }
 
     private func updateCollectionViewAnimated() {
@@ -68,7 +58,7 @@ final class FeedCollection: UICollectionView {
     }
 
     @objc private func handleDoubleTap(_ gesture: UITapGestureRecognizer) {
-        guard let viewModel = viewModel, viewModel.mode == .feed, gesture.state == .ended else { return }
+        guard !isReadOnlyMode, gesture.state == .ended else { return }
 
         let point = gesture.location(in: self)
 
@@ -80,13 +70,7 @@ final class FeedCollection: UICollectionView {
             if let cell = cellForItem(at: indexPath) as? FeedCell {
                 cell.showLikeAnimation()
 
-                viewModel.toggleLike(at: indexPath.item) { success in
-                    if success {
-                        print("Successfully updated like via ViewModel")
-                    } else {
-                        print("Failed to change like")
-                    }
-                }
+                viewModel?.toggleLike(at: indexPath.item) { _ in }
             }
         }
     }
@@ -116,7 +100,7 @@ extension FeedCollection: UICollectionViewDelegate, UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let viewModel = viewModel, viewModel.mode == .favourites else { return nil }
+        guard isReadOnlyMode, let indexPath = indexPaths.first else { return nil }
         guard let indexPath = indexPaths.first else { return nil }
 
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in

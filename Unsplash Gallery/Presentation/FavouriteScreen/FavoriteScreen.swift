@@ -9,10 +9,10 @@ import UIKit
 
 final class FavouriteViewController: UIViewController {
     private let collection = FeedCollection()
-    private let viewModel: FeedViewModel
+    private let viewModel: FavoritesViewModel
     private let imageListService: ImageListService
 
-    init(viewModel: FeedViewModel, imageListService: ImageListService) {
+    init(viewModel: FavoritesViewModel, imageListService: ImageListService) {
         self.viewModel = viewModel
         self.imageListService = imageListService
         super.init(nibName: nil, bundle: nil)
@@ -26,12 +26,8 @@ final class FavouriteViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupNavigationBarTitle(text: "Favourite", imageName: "heart")
-        
-        viewModel.mode = .favourites
         collection.viewModel = viewModel
-        viewModel.setupObserver()
-
-        imageListService.resetLikedPhotos()
+        collection.isReadOnlyMode = true
         imageListService.fetchLikedPhotosNextPage()
 
         collection.onPhotoTap = { [weak self] index in
@@ -43,6 +39,10 @@ final class FavouriteViewController: UIViewController {
             )
             let detailsViewController = DetailsScreenViewController(viewModel: detailsViewModel)
             self.navigationController?.pushViewController(detailsViewController, animated: true)
+        }
+        viewModel.onDataUpdated = { [weak self] in
+            print("FavouriteUI: Reloading collection with count: \(self?.viewModel.photosCount ?? 0)")
+            self?.collection.reloadData()
         }
     }
 
