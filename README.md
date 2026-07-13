@@ -1,60 +1,92 @@
-# 📸 Unsplash Gallery App
+# Unsplash Gallery
 
-Приложение для просмотра курируемых фотографий из Unsplash API с возможностью сохранения в "Избранное", реализованное на UIKit.
+Unsplash Gallery is an iOS photo gallery app built with UIKit for an Innowise internship test assignment. The app shows curated photos from the Unsplash API, supports pagination, photo details, and local favorites.
 
----
+## Screenshots
 
-## 👤 Contact Information
-* **Name:** Игнат Рогачевич
-* **GitHub:** [https://github.com/shogassxzp](https://github.com/shogassxzp)
-* **Telegram:** [@shogassxzp](https://t.me/shogassxzp)
-
----
-
-## 🚀 Project Overview
-Приложение представляет собой галерею с бесконечным скроллом (Pagination), детальным просмотром и локальным хранилищем для избранных фотографий.
-
-**Key Features:**
-* **Waterfall Layout:** Кастомная динамическая сетка (Pinterest-style) для отображения фото разной высоты.
-* **Modern UI (iOS 18 Ready):** Адаптивная навигация. Реализована кастомная кнопка назад с `UIVisualEffectView` для обеспечения читаемости на любом типе контента.
-* **Networking:** Пагинация (30 фото на запрос) и обработка состояний загрузки.
-* **Image Caching:** Использование Kingfisher для эффективного кеширования и плавности скролла.
-
----
-
-## 🏗 Architecture & Tech Stack
-Проект реализован с использованием паттерна **MVVM**, что обеспечивает четкое разделение бизнес-логики и интерфейса.
-
-* **Language:** Swift 6 / iOS 17+
-* **Architecture:** MVVM + Services
-* **Database:** CoreData
-* **Networking:** URLSession (Generic API Client)
-* **UI:** UIKit (Programmatic & Storyboard)
-* **Linter:** SwiftLint (все правила соблюдены)
-* **Gitflow:** Использование feature-ветвей и Conventional Commits.
-
----
-
-## 📱 Screenshots
-
-В приложении реализован интуитивно понятный интерфейс, адаптированный под светлую и темную темы оформления iOS 17/18.
-
-| **Лента (Gallery)** | **Детали (Detail)** | **Избранное (Favorites)** |
+| Feed | Details | Favorites |
 | :---: | :---: | :---: |
-| <img src="./Screenshots/feed.png" width="250" > | <img src="./Screenshots/details.png" width="250" alt="Экран деталей с кастомной кнопкой назад"> | <img src="./Screenshots/favourite.png" width="250" alt="Экран избранных фотографий (CoreData)"> |
+| <img src="./Screenshots/feed.png" width="250" alt="Feed screen"> | <img src="./Screenshots/details.png" width="250" alt="Photo details screen"> | <img src="./Screenshots/favourite.png" width="250" alt="Favorites screen"> |
 
----
+## Features
 
-## 🛠 Configuration
-Для корректной работы приложения необходимо настроить API ключи:
+- Unsplash OAuth flow
+- Curated photo feed
+- Infinite scrolling with pagination
+- Custom waterfall layout
+- Photo details screen
+- Add and remove favorites
+- Favorites synchronization across screens
+- Local persistence with CoreData
+- Image caching with Kingfisher
+- Double-tap like interaction
+- Context menu and haptic feedback
+- Light and dark theme support
+- Empty states
+- Unit tests for services and helpers
 
-1. Добавить файл Keys.plist в папку App внутри проекта
+## Tech Stack
 
----
+- Swift 6
+- UIKit
+- MVVM
+- Services layer
+- URLSession
+- CoreData
+- Combine bindings
+- Kingfisher
+- SwiftKeychainWrapper
+- SwiftLint
+- XCTest
+- iOS 17+
 
-## 🧪 Testing & SOLID
-* **Unit Tests:** Реализованы тесты для сетевого слоя (parsing) и бизнес-логики `AuthHelper`.
-* **D.I. (Dependency Injection):** Сервисы внедряются в ViewModel, что упрощает тестирование.
-* **Interface Segregation:** Протоколы используются для абстрагирования сервисов.
+## Architecture
 
+The project uses MVVM with dependency injection. View controllers own rendering and user interaction, view models manage screen state, and services encapsulate networking, OAuth, and storage.
 
+```text
+Unsplash Gallery/
+├── App/             # AppDelegate, SceneDelegate, constants
+├── Presentation/    # Screens, view controllers, view models, tab bar
+├── Services/        # Networking, OAuth, token storage, CoreData storage
+├── Helperes/        # Shared helpers and protocols
+└── Resources/       # Assets, storyboard resources, CoreData model
+```
+
+## Key Implementation Details
+
+- `FeedCollection` and `WaterfallLayout` provide a Pinterest-style grid.
+- `FeedViewModel` and `FavoritesViewModel` share a common photo feed protocol.
+- `ImageListService` handles photo loading, pagination, and like synchronization.
+- `StorageManager` stores favorite photos locally.
+- `OAuth2TokenStorage` keeps the access token outside regular app state.
+- Services are injected into view models, which makes unit tests simpler and avoids hard dependencies on singletons.
+
+## Tests
+
+The repository includes:
+
+- `ImageListServiceTests`
+- `ProfileServiceTests`
+- `DateFormatterTests`
+- `MockURLProtocol`
+
+## Configuration
+
+Create `Keys.plist` inside the `App` folder and add the Unsplash API credentials required by the project.
+
+## Getting Started
+
+1. Open `Unsplash Gallery.xcodeproj` in Xcode.
+2. Add `Keys.plist` with API credentials.
+3. Select the app scheme.
+4. Run on an iOS 17+ simulator.
+
+## Contact
+
+- GitHub: [shogassxzp](https://github.com/shogassxzp)
+- Telegram: [@shogassxzp](https://t.me/shogassxzp)
+
+## Repository
+
+[github.com/shogassxzp/Unsplash-Gallery](https://github.com/shogassxzp/Unsplash-Gallery)
